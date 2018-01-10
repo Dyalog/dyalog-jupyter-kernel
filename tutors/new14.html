@@ -1,0 +1,105 @@
+﻿<div class="lessonstep">
+New Language Features in TryAPL
+</div>
+
+<div class="lessonstep">
+Monadic primitive function <span class="APL">≢</span> is "Tally" - the length of the leading axis of its argument array:
+</div>
+<div class="lessonexec">⊢A3 ← 2 3 4⍴⍳24     ⍝ rank-3 array </div>
+<div class="lessonexec">⍴A3                 ⍝ ⍴ returns _vector_ shape </div>
+<div class="lessonexec">≢A3                 ⍝ ≢ returns _scalar_ tally </div>
+
+<div class="lessonstep">
+Now we can code an "average" function for arrays of any rank:
+</div>
+
+<div class="lessonexec">avg ← {(+⌿⍵)÷≢⍵}    ⍝ leading-axis average</div>
+
+<div class="lessonexec">avg 1 2 3 4         ⍝ average of vector</div>
+<div class="lessonexec">avg A3              ⍝ average along leading axis</div>
+<div class="lessonexec">avg 42              ⍝ average of scalar</div>
+
+<div class="lessonstep">
+Dyadic primitive operator <span class="APL">⍤</span> is "Rank" - operand function applied to/between subarrays of given rank:
+</div>
+
+<div class="lessonexec">100 200 (+⍤0 2) A3  ⍝ scalars (0) plus matrices (2)</div>
+
+<div class="lessonexec">A3                      ⍝ rank-3 array</div>
+<div class="lessonexec">avg A3                  ⍝ average of rank-3 array</div>
+<div class="lessonexec">(avg⍤2)A3               ⍝ average of matrix sub-arrays</div>
+<div class="lessonexec">(avg⍤1)A3               ⍝ average of vector sub-arrays</div>
+<div class="lessonexec">(avg⍤0)A3               ⍝ average of each scalar item</div>
+<div class="lessonexec">(avg A3) ≡ (avg⍤3)A3    ⍝ average of rank-3 array</div>
+<div class="lessonexec">(avg⍤¯1)A3              ⍝ for rank-3 argument, same as ⍤2</div>
+
+<div class="lessonstep">
+Monadic primitive operator <span class="APL">⌸</span> is "Key" - right argument items grouped according to left argument key values:
+</div>
+
+<div class="lessonexec">'FMF' {⍺ ⍵}⌸ ↑'Jane' 'Jean' 'Joan'      ⍝ group by gender</div>
+
+<div class="lessonexec">(↑'Red' 'Blue' 'Red') {⍺ ⍵}⌸ 10 20 30   ⍝ group by colour</div>
+
+<div class="lessonstep">
+The monadic case uses <span class="APL">⍵</span> as keys and <span class="APL">(⍳≢⍵)</span> as values to be grouped:
+</div>
+
+<div class="lessonexec">{⍺ (≢⍵) ⍵}⌸ 'Mississippi'        ⍝ letter count</div>
+
+<div class="lessonexec">{≢⍵}⌸ ?1000⍴6                    ⍝ distribution of 1000 dice</div>
+
+<div class="lessonexec">⊢A2 ← ↑ 5⍴'Red' 'Blue' 'Green'   ⍝ rank-2 array</div>
+
+<div class="lessonexec">{⍺ ⍵}⌸ A2                        ⍝ group by colour</div>
+
+<div class="lessonstep">
+Dyadic primitive function <span class="APL">⍳</span> is extended for left arguments of rank greater than 1:
+</div>
+
+<div class="lessonexec">A2 ⍳ 'Blue '            ⍝ row index</div>
+
+<div class="lessonexec">A2 ⍳ ↑'Green' 'Grass'   ⍝ row indices</div>
+
+<div class="lessonstep">
+New syntax: A sequence of three functions in isolation is a "fork".
+</div>
+
+<div class="lessonexec">mean ← +⌿ ÷ ≢           ⍝ (f g h)⍵ → (f ⍵) g (h ⍵)</div>
+
+<div class="lessonexec">mean                    ⍝ tree-style display of fork</div>
+
+<div class="lessonexec">mean 1 2 3 4            ⍝ mean item of vector</div>
+
+<div class="lessonstep">
+A dyadic fork:
+</div>
+
+<div class="lessonexec">12 (-,÷) 3              ⍝ ⍺(f g h)⍵ → (⍺ f ⍵) g (⍺ h ⍵)    </div>
+
+<div class="lessonstep">
+Longer "function trains" are grouped in threes from the right
+</div>
+
+<div class="lessonexec">6 (+,-,×,÷) 3           ⍝ (... f g h j k) → (... f g(h j k))</div>
+
+<div class="lessonstep">
+Two function in isolation are an "Atop":
+</div>
+
+<div class="lessonexec">'Banana' (~∊) 'an'      ⍝ ⍺(f g)⍵ → f (⍺ g ⍵)</div>
+
+<div class="lessonexec">2 2 2 (⍉⊤) ⍳3           ⍝ transpose of encode</div>
+
+<div class="lessonstep">
+Monadic Atop is just composition:
+</div>
+
+<div class="lessonexec">rank ← ⍴⍴</div>
+
+<div class="lessonexec">rank A3</div>
+
+<div class="lessonstep">
+That's it!
+</div>
+

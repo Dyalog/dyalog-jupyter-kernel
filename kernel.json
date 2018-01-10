@@ -1,0 +1,6 @@
+{
+	"argv": ["/home/bojan/anaconda3/bin/python", "-m", "dyalog_kernel", 
+			 "-f", "{connection_file}"], 
+	"display_name": "Dyalog APL", 
+	"language": "apl"
+}

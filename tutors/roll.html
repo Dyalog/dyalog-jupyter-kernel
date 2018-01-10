@@ -1,0 +1,28 @@
+﻿<div class="lessonstep">Taking APL for a roll.<br/>
+The question mark <span class="APL">?</span> implements the "roll" function in APL.<br/>
+<span class="APL">?n</span> will return a number pseudo-randomly selected from the integers in <span class="APL">⍳n</span> with each integer having an equal chance of being selected.</div>
+<div class="lessonstep">List the first 6 integers</div>
+<div class="lessonexec">⍳6</div>
+<div class="lessonstep">Now generate one of them at random...</div>
+<div class="lessonexec">?6</div>
+<div class="lessonstep">Try again, it has a 1 in 6 chance of being the same</div>
+<div class="lessonexec">?6</div>
+<div class="lessonstep">If you kept executing <span class="APL">?6</span>, it would be like rolling a 6-sided die over and over.  But what if we have 5 dice?</div>
+
+<div class="lessonexec">?6 6 6 6 6</div>
+
+<div class="lessonstep">APL functions can take arrays as arguments and return arrays as results.</div>
+<div class="lessonstep">Here's another way of rolling 5 dice at once.</div>
+<div class="lessonexec">?5⍴6</div>
+<div class="lessonstep">Now let's look at some ideas about probability...</div>
+<div class="lessonstep">The casino table game known as "craps" uses 2 6-sided dice that are added to give results in the range of 2-12.  The table of all possible rolls looks like this...</div>
+<div class="lessonexec">⍳6 6</div>
+<div class="lessonstep">And the totals are given by summing "each" roll, in this case using APL's "each" operator <span class="APL">¨</span></div>
+<div class="lessonexec">+/¨⍳6 6</div>
+
+<div class="lessonstep">So first, let's create a function to compute the elements in the range of results.</div>
+<div class="lessonexec">range←{(¯1+⍴,⍵)↓⍳+/⍵}</div>
+<div class="lessonexec">range 6 6</div>
+
+<div class="lessonexec">graph←{⍉↑t n('⎕'⍴⍨¨⌊0.5+20×{⍵÷⌈/⍵}n←+/(t←∪,+/¨⍳⍵)∘.=+/¨?⍺⍴⊂⍵)}</div>
+<div class="lessonexec">10000 graph 6 6</div>
