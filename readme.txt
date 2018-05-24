@@ -1,7 +1,7 @@
 Testing environment
 
 - Ubuntu 16.04LST 64-bit
-- Anaconda 1.6.3
+- Anaconda 1.6.3 (Python 3 version)
 - Jupyter 4.3.0
 - Dyalog APL/S - 64 version 16.0.29464 unicode edition
 
