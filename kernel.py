@@ -29,7 +29,7 @@ TCP_TIMEOUT = 0.1
 #_increment for port. To find first available
 _port = DYALOG_PORT
 
-#no of sec aiting for initial RIDE handshake. Slower stytems should be greater no. of sec, to give a dyalog chance to start
+#no of sec waiting for initial RIDE handshake. Slower systems should be greater no. of sec, to give dyalog a chance to start
 RIDE_INIT_CONNECT_TIME_OUT = 3  #seconds
 
 
@@ -302,7 +302,7 @@ class DyalogKernel(Kernel):
         c_pos=0
 
         while True:
-            #no RIDE message can be less then a 8 bytes in length
+            #no RIDE message can be less then 8 bytes in length
             if len(data)>8:
         
                 if sys.version_info[0]<3:
@@ -476,7 +476,7 @@ class DyalogKernel(Kernel):
                     #lessonstep: append HTML
                     cells.append({"cell_type": "markdown", "metadata": {}, "source": str(ff) })
                 else:
-                    #lessonexec ppend TEXT
+                    #lessonexec: append TEXT
                     cells.append({"cell_type": "code",
                                   "execution_count": None,
                                   "metadata": {
@@ -593,7 +593,7 @@ class DyalogKernel(Kernel):
                     err = False
                     data_collection =''
 
-                    # give the Dyalog APL RIDE a chance to respond.
+                    # give Dyalog APL a chance to respond.
 
                     time.sleep(1)
 
@@ -665,18 +665,18 @@ class DyalogKernel(Kernel):
 
             '''
 
-            #nested REPAT...UNTIL loops. Two of them: perform_exit and read_not_ok. I guess its not the best way doing it in Python, yet it works just fine.
+            #nested REPEAT...UNTIL loops. Two of them: perform_exit and read_not_ok. I guess its not the best way of doing it in Python, yet it works just fine.
 
 
             perform_exit = False
             strng = ''
 
-            #will read lines until class="lessionexec" or EOF
+            #will read lines until class="lessonexec" or EOF
             while not perform_exit:
 
 
 
-                #read  lines until we actually do have some data... or EOF has been reached
+                #read lines until we actually do have some data... or EOF has been reached
                 read_not_ok = True
 
                 while read_not_ok:
