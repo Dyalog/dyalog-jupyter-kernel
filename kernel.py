@@ -501,7 +501,7 @@ class DyalogKernel(Kernel):
 
         code = code.strip()
 
-        if code[0]=='!':
+        if False: # code[0]=='!': # disable all special commands
             code = code[1:]
 
             code_cmd=code.split()

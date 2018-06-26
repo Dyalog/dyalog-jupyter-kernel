@@ -19,8 +19,3 @@ This is a [Jupyter](http://jupyter.org/) kernel for [Dyalog APL](https://www.dya
 From the **Linux** command line, run `jupyter-notebook`. This will start a web server and try to point your web browser at it. From the web interface you can use the New drop-down to create a new Dyalog APL notebook.
 
 On **Windows** if you have installed Anaconda, open the Anaconda Navigator from the Start menu and launch Jupyter notebook from the navigator home screen.
-
-This kernel implements some meta-commands:
-* `!pw = <n>` tells the APL interpreter to use a page width of _n_ characters.
-* `!tutor` lists available tutorials.
-* `!tutor <source> <destination>` converts XHTML tutorial `tutor/<source>.html` to notebook `tutor/<destination>.ipynb`.
