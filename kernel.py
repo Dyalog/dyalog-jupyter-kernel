@@ -312,7 +312,7 @@ class DyalogKernel(Kernel):
                     ch4 = data[c_pos + 7].decode("utf-8")
                     ride_id = ch1+ch2+ch3+ch4
                 else:
-                    ride_id = chr(data[c_pos+4]) + chr(data[c_pos+5]) + chr(data[c_pos+6]) + chr(data[c_pos+7])		
+                    ride_id = chr(data[c_pos+4]) + chr(data[c_pos+5]) + chr(data[c_pos+6]) + chr(data[c_pos+7])
                 
                 
                 
