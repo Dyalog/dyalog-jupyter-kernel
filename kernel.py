@@ -68,13 +68,6 @@ class DyalogKernel(Kernel):
     connected = False
 
 
-    tutor = False;
-
-    tutor_file=''
-    tutor_data = []
-    tutor_cnt = 0
-
-
     # RIDE output will wrap at that width
     # To save receive requests, lets put a relatively big number here
 
@@ -418,303 +411,71 @@ class DyalogKernel(Kernel):
     '''
 
 
-
-
-    def convert_tutorial(self, src, dest):
-
-        source_path = os.path.dirname(os.path.abspath(__file__)) + os.sep + 'tutors' + os.sep
-        destination_path = os.getcwd()
-
-        file_source = Path(source_path + src)
-        file_destination = Path(destination_path + os.sep + dest)
-
-        ok_to_go = True
-
-        if file_destination.is_file():
-            self.out_error("File " + dest + " already exists")
-            ok_to_go = False
-
-        if not file_source.is_file():
-            self.out_error("File " + src + " does not exists")
-            ok_to_go = False
-
-        if ok_to_go:
-            # all good, lets convert file.
-
-            cells = []
-
-            d = {
-                "metadata" : {
-                    "kernelspec": {
-                        "display_name": "Dyalog APL",
-                        "language": "apl",
-                        "name": "dyalog-kernel"
-                    },
-                    "language_info": {
-                        "file_extension": ".txt",
-                        "mimetype": "text/plain",
-                        "name": "apl"
-                    }
-                },
-                "nbformat": 4,
-                "nbformat_minor": 2,
-                "cells": cells,
-            }
-
-
-            w = codecs.open(destination_path + os.sep + dest, 'w', encoding='utf-8')
-            f = codecs.open(source_path + os.sep + src, 'r', encoding='utf-8')
-
-
-
-            soup = BeautifulSoup(f.read())
-            data = soup.find_all("div", {"class":["lessonstep","lessonexec"]})
-
-            for ff  in data:
-
-                if BeautifulSoup(str(ff)).find("div", {"class":["lessonstep"]}):
-                    #lessonstep: append HTML
-                    cells.append({"cell_type": "markdown", "metadata": {}, "source": str(ff) })
-                else:
-                    #lessonexec: append TEXT
-                    cells.append({"cell_type": "code",
-                                  "execution_count": None,
-                                  "metadata": {
-                                      "collapsed": True
-                                  },
-                                  "outputs": [],
-                                  "source": [
-
-                                      ff.text
-                                  ]
-
-                                  })
-
-            w.write(json.dumps(d))
-
-            w.close()
-            f.close()
-
-
     def do_execute(self, code, silent, store_history=True, user_expressions=None,
                    allow_stdin=True):
 
         code = code.strip()
 
-        if False: # code[0]=='!': # disable all special commands
-            code = code[1:]
+        if not silent:
+            if self.connected:
+                code = code + '\n'
+                d = ["Execute", {"trace": 0, "text": code}]
+                self.ride_send(d)
 
-            code_cmd=code.split()
-
-            if len(code_cmd) == 3:
-
-                if code_cmd[0] == 'tutor':
-
-                    code_cmd[1] +='.html'
-                    code_cmd[2] +='.ipynb'
-
-                    self.convert_tutorial(code_cmd[1],code_cmd[2])
-
-            if len(code_cmd)==1:
-                if code_cmd[0] == 'tutor':
-                    mpath = os.path.dirname(os.path.abspath(__file__))+ os.sep + 'tutors' + os.sep
-                    list_of_tutors = [f for f in os.listdir(mpath) if isfile(join(mpath, f))]
-                    out_str = 'Please type !tutor <name>  shift+enter to start it. \nTo stop running the tutorial or example, type !tutor stop. \nAvailable tutors and examples:\n\n'
-                    for f in list_of_tutors:
-                        out_str += f.split('.')[0] + '\n'
-                    self.out_stream(str(out_str))
-
-            if len(code_cmd)==2:
-                if code_cmd[0]=='tutor':
-
-
-                    if code_cmd[1] in ['stop','quit','off','0']:
-                        if self.tutor:
-                            self.tutor = False
-                            #self.tutor_file.close()
-                            self.out_stream('Tutorial off')
-                    else:
-                        try:
-                            #self.tutor_file = open(os.path.dirname(os.path.abspath(__file__))+'/tutors/'+code_cmd[1]+'.html','r')
-                            f = codecs.open(os.path.dirname(os.path.abspath(__file__))+os.sep+'tutors'+os.sep+code_cmd[1]+'.html','r', encoding='utf-8')
-                            self.tutor_file = BeautifulSoup(f.read())
-                            f.close()
-
-                            self.tutor_data = self.tutor_file.find_all("div", {"class":["lessonstep","lessonexec"]})
-
-                            self.tutor_cnt = 0
-
-
-                            self.tutor = True
-                        except:
-                            self.out_error('File '+code_cmd[1]+' does not exist. Please type !tutor and press shift-enter to see available tutors and examples.')
-
-            code_eq = code.split('=')
-            if len(code_eq)==2:
-
-                if code_eq[0].strip() == "pw":
-                    pw = self.RIDE_PW
-                    er = False
-
-                    try:
-                        pw = int(code_eq[1].strip())
-                    except:
-                        self.out_error('Invalid integer number, default width in characters set to pw=80')
-                        pw = 80
-                        er = True
-
-                    if not er:
-                        self.out_stream('Width in characters set to pw='+str(pw))
-                    if pw!=self.RIDE_PW:
-
-                        self.RIDE_PW = pw
-                        d = ["SetPW", {"pw": self.RIDE_PW}]  #99
-                        self.ride_send(d)
-
-
-
-            reply_content = {'status': 'ok',
-                             # The base class increments the execution count
-                             'execution_count': self.execution_count,
-                             'payload': [],
-                             'user_expressions': {},
-                             }
-
-        # APL
-        else:
-
-            if not silent:
-                if self.connected:
-                    code = code + '\n'
-                    d = ["Execute", {"trace": 0, "text": code}]
-                    self.ride_send(d)
-
-                    PROMPT_AVAILABLE = True
-                    err = False
-                    data_collection =''
+                PROMPT_AVAILABLE = True
+                err = False
+                data_collection =''
 
                     # give Dyalog APL a chance to respond.
 
-                    time.sleep(1)
+                time.sleep(1)
 
-                    while self.ride_receive():
+                while self.ride_receive():
+                    pass
+
+                # as long as we have queue dq or RIDE PROMPT is not available... do loop
+                while (len(dq)>0 or not PROMPT_AVAILABLE):
+
+                    received = ['','']
+                    # in case prompt is not available e.g time consuming calculations, make sure dq is not empty.
+                    if len(dq) > 0:
+                        received = dq.pop()
+
+                    if received[0]=='AppendSessionOutput':
+                        if not PROMPT_AVAILABLE:
+                            data_collection = data_collection + received[1].get('result')
+                    elif received[0]=='SetPromptType':
+                        if received[1].get('type') == 0:
+                            PROMPT_AVAILABLE = False
+                        else:
+                            PROMPT_AVAILABLE = True
+                            if len(data_collection) > 0:
+                                if err:
+                                    self.out_error(data_collection)
+                                else:
+                                    self.out_result(data_collection)
+                                data_collection = ''
+                            err = False
+                    elif received[0]=='ShowHTML':
+                        self.out_html(received[1].get('html'))
+                    elif received[0]=='HadError':
+                        # in case of error, set the flag err
+                        # it should be reset back to False only when prompt is available again.
+                        err = True
+                    #actually we don't want echo
+                    elif received[0]=='EchoInput':
                         pass
+                    #self.pa(received[1].get('input'))
 
-                    # as long as we have queue dq or RIDE PROMPT is not available... do loop
-                    while (len(dq)>0 or not PROMPT_AVAILABLE):
+            else:
+                self.out_error('Dyalog APL not connected')
 
-                        received = ['','']
-                        # in case prompt is not available e.g time consuming calculations, make sure dq is not empty.
-                        if len(dq) > 0:
-                            received = dq.pop()
-
-                        if received[0]=='AppendSessionOutput':
-                            if not PROMPT_AVAILABLE:
-                                data_collection = data_collection + received[1].get('result')
-                        elif received[0]=='SetPromptType':
-                            if received[1].get('type') == 0:
-                                PROMPT_AVAILABLE = False
-                            else:
-                                PROMPT_AVAILABLE = True
-                                if len(data_collection) > 0:
-                                    if err:
-                                        self.out_error(data_collection)
-                                    else:
-                                        self.out_result(data_collection)
-                                    data_collection = ''
-                                err = False
-                        elif received[0]=='ShowHTML':
-                            self.out_html(received[1].get('html'))
-                        elif received[0]=='HadError':
-                            # in case of error, set the flag err
-                            # it should be reset back to False only when prompt is available again.
-                            err = True
-                        #actually we don't want echo
-                        elif received[0]=='EchoInput':
-                            pass
-                        #self.pa(received[1].get('input'))
-
-                else:
-                    self.out_error('Dyalog APL not connected')
-
-            reply_content = {'status': 'ok',
-                    # The base class increments the execution count
-                    'execution_count': self.execution_count,
-                    'payload': [],
-                    'user_expressions': {},
-                    }
-
-        if self.tutor:
-
-
-
-            perform_exit = False
-
-            while not perform_exit:
-
-                try:
-                    if BeautifulSoup(str(self.tutor_data[self.tutor_cnt])).find("div", {"class": ["lessonstep"]}):
-
-                        self.out_html(str(self.tutor_data[self.tutor_cnt]))
-                    else:
-                        self.out_html(str(self.tutor_data[self.tutor_cnt]))
-                        perform_exit = True
-                    self.tutor_cnt += 1
-                except:
-                    self.tutor = False
-
-            '''
-
-            #nested REPEAT...UNTIL loops. Two of them: perform_exit and read_not_ok. I guess its not the best way of doing it in Python, yet it works just fine.
-
-
-            perform_exit = False
-            strng = ''
-
-            #will read lines until class="lessonexec" or EOF
-            while not perform_exit:
-
-
-
-                #read lines until we actually do have some data... or EOF has been reached
-                read_not_ok = True
-
-                while read_not_ok:
-                    read_not_ok = False
-                    strng = self.tutor_file.readline()
-
-                    #EOF, tutor finished
-                    if not strng:
-                        self.tutor = False
-                        self.tutor_file.close()
-                        perform_exit = True
-                    else:
-                        #Empty line. Read next one.
-                        if len(strng.strip()) == 0:
-                            read_not_ok = True
-
-
-                if not perform_exit:
-                    # self.out_html(strng)
-                    self.parser.data = ''
-                    self.parser.feed(strng)
-
-                    #self.out_stream(strng+'\n')
-
-
-
-                    if self.parser.type == "lessonstep" and self.parser.data.strip() != '':
-                        self.out_html(strng)
-
-                    if self.parser.type == "lessonexec" and self.parser.data.strip() != '':
-                        self.out_html(self.parser.data)
-                        perform_exit = True
-
-            '''
-
-        else:
-            pass
-
+        reply_content = {'status': 'ok',
+                # The base class increments the execution count
+                'execution_count': self.execution_count,
+                'payload': [],
+                'user_expressions': {},
+                }
 
 
 
