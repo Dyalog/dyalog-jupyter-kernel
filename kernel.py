@@ -81,7 +81,7 @@ class DyalogKernel(Kernel):
     RIDE_PW = 80
 
 
-    dyalog_subporcess = None
+    dyalog_subprocess = None
 
     def out_error(self, s):
         _content = {
@@ -254,13 +254,13 @@ class DyalogKernel(Kernel):
         if DYALOG_HOST == '127.0.0.1':
             if sys.platform.lower().startswith('win'):
                 #we are running Windows. Please make sure Dyalog.exe is in path
-                self.dyalog_subporcess = subprocess.Popen(['dyalog.exe','RIDE_INIT=SERVE::' + str(self._port).strip()])
+                self.dyalog_subprocess = subprocess.Popen(['dyalog.exe','RIDE_INIT=SERVE::' + str(self._port).strip()])
             else:
                 #linux, darwin... etc
                 dyalog_env = os.environ.copy()
                 dyalog_env['RIDE_INIT'] = 'SERVE::' + str(self._port).strip()
                 #start dyalog executable in xterm. Req: xterm must be installed. dyalog should be in the path
-                self.dyalog_subporcess  = subprocess.Popen(['xterm', '-e', 'dyalog'], env=dyalog_env)
+                self.dyalog_subprocess  = subprocess.Popen(['xterm', '-e', 'dyalog'], env=dyalog_env)
 
 
 
@@ -627,9 +627,9 @@ class DyalogKernel(Kernel):
                             self.out_html(received[1].get('html'))
                         elif received[0]=='HadError':
                             # in case of error, set the flag err
-                            # it should be reseted back to False only when prompt is available again.
+                            # it should be reset back to False only when prompt is available again.
                             err = True
-                        #actualy we don't want echo
+                        #actually we don't want echo
                         elif received[0]=='EchoInput':
                             pass
                         #self.pa(received[1].get('input'))
@@ -732,8 +732,8 @@ class DyalogKernel(Kernel):
             if self.connected:
                 self.ride_send(["Exit", {"code": 0}])
          #   time.sleep(2)
-         #   if self.dyalog_subporcess:
-         #       self.dyalog_subporcess.kill()
+         #   if self.dyalog_subprocess:
+         #       self.dyalog_subprocess.kill()
 
         self.dyalogTCP.close()
         self.connected = False
