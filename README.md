@@ -1,4 +1,4 @@
-This is a [Jupyter](http://jupyter.org/) kernel for [Dyalog APL](https://www.dyalog.com/).
+# [Jupyter](http://jupyter.org/) kernel for [Dyalog APL](https://www.dyalog.com/)
 
 ## Installation
 
@@ -16,6 +16,10 @@ This is a [Jupyter](http://jupyter.org/) kernel for [Dyalog APL](https://www.dya
 
 ## Running
 
-From the **Linux** command line, run `jupyter-notebook`. This will start a web server and try to point your web browser at it. From the web interface you can use the New drop-down to create a new Dyalog APL notebook.
+1. Start Jupyter notebook:  
+   Linux: Open a terminal window  
+   Windows: Open the Anaconda Prompt from the Start menu
+1. Change directory (`cd mydirectory`) to where you want to place new notebooks or load notebooks from (or a parent directory thereof).
+1. Run `jupyter-notebook`.
 
-On **Windows** if you have installed Anaconda, open the Anaconda Navigator from the Start menu and launch Jupyter notebook from the navigator home screen.
+This will start a web server and try to point your web browser at it. From the web interface you can use the *New* drop-down to create a new Dyalog APL notebook, or navigate to and click on any existing notebook (a file with the `.ipynb` extension) to open it.
