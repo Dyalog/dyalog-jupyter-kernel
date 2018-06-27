@@ -18,10 +18,7 @@
    Linux: `$(python3 -m site --user-site)/`  
    Windows: `%APPDATA%\Python\Python36\site-packages\`
 
-1. Add the Dyalog install directory (default version 17.0 install path shown here — edit as necessary) to the `PATH` environment variable:  
-
-   Linux: Edit your `~/.profile` or `~/.bashrc` file adding a line saying `export PATH=$PATH:/opt/mdyalog/17.0/64/unicode`
-   Windows:  
+1. Windows only:
 
    1. <kbd>**⊞** Win</kbd>+<kbd>Pause</kbd>
    1. click *Advanced system settings*
