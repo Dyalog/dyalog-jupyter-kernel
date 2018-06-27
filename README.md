@@ -14,7 +14,7 @@
    Linux: `~/.local/share/jupyter/kernels/`  
    Windows: `%APPDATA%\jupyter\kernels\`
 
-1. Create the following directory and copy `dyalog_kernel` (note the underscore `_`)into it:  
+1. Create the following directory and copy `dyalog_kernel` (note the underscore `_`) into it:  
    Linux: `$(python3 -m site --user-site)/`  
    Windows: `%APPDATA%\Python\Python36\site-packages\`
 
