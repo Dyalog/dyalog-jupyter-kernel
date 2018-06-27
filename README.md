@@ -3,19 +3,26 @@
 ## Installation
 
 1. Install Dyalog APL version 15.0 or later.
+
 1. Install Python 3 and Jupyter. There are several ways to do this, for example:
    * Install [Anaconda](https://www.anaconda.com/download/) (Python 3 version), which is available for various platforms.
    * On Debian-based Linux systems, try `sudo apt-get install jupyter-notebook`.
+
 1. [Clone](https://help.github.com/articles/cloning-a-repository/) this repository.
-1. Create the directory following directory and copy `kernel.json` into it:  
-   Linux: `~/.local/share/jupyter/kernels/dyalog-kernel/`  
-   Windows: `%APPDATA%\jupyter\kernels\dyalog-kernel\`
-1. Create the following directory and copy `__init__.py`, `__main__.py` and `kernel.py` into it:  
-   Linux: `$(python3 -m site --user-site)/dyalog_kernel/`  
-   Windows: `%APPDATA%\Python\Python36\site-packages\dyalog_kernel\`
-1. Add the Dyalog install directory (default version 17.0 install path shown here — edit as necessary) to `PATH`:  
+
+1. Create the directory following directory and copy `dyalog-kernel` (note the hyphen `-`) into it:  
+   Linux: `~/.local/share/jupyter/kernels/`  
+   Windows: `%APPDATA%\jupyter\kernels\`
+
+1. Create the following directory and copy `dyalog_kernel` (note the underscore `_`)into it:  
+   Linux: `$(python3 -m site --user-site)/`  
+   Windows: `%APPDATA%\Python\Python36\site-packages\`
+
+1. Add the Dyalog install directory (default version 17.0 install path shown here — edit as necessary) to the `PATH` environment variable:  
+
    Linux: Edit your `~/.profile` or `~/.bashrc` file adding a line saying `export PATH=$PATH:/opt/mdyalog/17.0/64/unicode`
    Windows:  
+
    1. <kbd>**⊞** Win</kbd>+<kbd>Pause</kbd>
    1. click *Advanced system settings*
    1. click *Environment Variables…*
