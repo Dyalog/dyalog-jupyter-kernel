@@ -55,8 +55,8 @@ class DyalogKernel(Kernel):
 
     language_info = {
         'name': 'apl',
-        'mimetype': 'text/plain',
-        'file_extension': '.txt'
+        'mimetype': 'text/apl',
+        'file_extension': '.apl'
     }
 
 
