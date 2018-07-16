@@ -15,6 +15,7 @@
    Linux: `$(python3 -m site --user-site)/`  
    Windows: `%APPDATA%\Python\Python36\site-packages\`  
    and copy `dyalog_kernel` (note the underscore `_`) into it.
+1. You may now delete the repository clone, if you wish to do so.
 1. Windows only:
 
    1. <kbd>**⊞** Win</kbd>+<kbd>Pause</kbd>
