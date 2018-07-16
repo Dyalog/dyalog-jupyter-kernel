@@ -24,7 +24,7 @@
    1. click *System variables*
    1. double click on *Path*
    1. click *New*
-   1. type `C:\Program Files\Dyalog\Dyalog APL-64 17.0 Unicode`
+   1. type `C:\Program Files\Dyalog\Dyalog APL-64 17.0 Unicode` or whatever your install directory is
    1. click *OK*
    1. click *OK*
    1. click *OK*
@@ -44,4 +44,3 @@ This will start a web server and try to point your web browser at it. From the w
 If you get the message `OSError: [Errno 99] Cannot assign requested address` try:
 
 `jupyter-notebook --ip=0.0.0.0 --port=8080` or some other port number.
-
