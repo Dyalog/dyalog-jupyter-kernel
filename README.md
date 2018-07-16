@@ -3,21 +3,18 @@
 ## Installation
 
 1. Install Dyalog APL version 15.0 or later.
-
 1. Install Python 3 and Jupyter. There are several ways to do this, for example:
    * Install [Anaconda](https://www.anaconda.com/download/) (Python 3 version), which is available for various platforms.
    * On Debian-based Linux systems, try `sudo apt-get install jupyter-notebook`.
-
 1. [Clone](https://help.github.com/articles/cloning-a-repository/) this repository.
-
-1. Create the directory following directory and copy `dyalog-kernel` (note the hyphen `-`) into it:  
+1. Create the following directory:
    Linux: `~/.local/share/jupyter/kernels/`  
-   Windows: `%APPDATA%\jupyter\kernels\`
-
-1. Create the following directory and copy `dyalog_kernel` (note the underscore `_`) into it:  
+   Windows: `%APPDATA%\jupyter\kernels\`  
+   and copy `dyalog-kernel` (note the hyphen `-`) into it.
+1. Create the following directory:
    Linux: `$(python3 -m site --user-site)/`  
-   Windows: `%APPDATA%\Python\Python36\site-packages\`
-
+   Windows: `%APPDATA%\Python\Python36\site-packages\`  
+   and copy `dyalog_kernel` (note the underscore `_`) into it.
 1. Windows only:
 
    1. <kbd>**⊞** Win</kbd>+<kbd>Pause</kbd>
