@@ -1,5 +1,7 @@
 # [Jupyter](http://jupyter.org/) kernel for [Dyalog APL](https://www.dyalog.com/)
 
+Ready-made notebooks [are available](github.com/Dyalog/dyalog-jupyter-notebooks) too!
+
 ## Installation
 
 1. Install Dyalog APL version 15.0 or later.
