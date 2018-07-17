@@ -247,13 +247,13 @@ class DyalogKernel(Kernel):
         if DYALOG_HOST == '127.0.0.1':
             if sys.platform.lower().startswith('win'):
                 #we are running Windows. Please make sure Dyalog.exe is in path
-                self.dyalog_subprocess = subprocess.Popen(['dyalog.exe','RIDE_INIT=SERVE::' + str(self._port).strip()])
+                self.dyalog_subprocess = subprocess.Popen(['dyalog.exe','RIDE_INIT=SERVE::' + str(self._port).strip(),  os.path.dirname(os.path.abspath(__file__)) + '/init.dws'])
             else:
                 #linux, darwin... etc
                 dyalog_env = os.environ.copy()
                 dyalog_env['RIDE_INIT'] = 'SERVE::' + str(self._port).strip()
                 #start dyalog executable in xterm. Req: xterm must be installed. dyalog should be in the path
-                self.dyalog_subprocess  = subprocess.Popen(['xterm', '-e', 'dyalog'], env=dyalog_env)
+                self.dyalog_subprocess  = subprocess.Popen(['xterm', '-e', ('dyalog ' + os.path.dirname(os.path.abspath(__file__)) + '/init.dws')], env=dyalog_env)
 
 
 
