@@ -1,6 +1,6 @@
 # [Jupyter](http://jupyter.org/) kernel for [Dyalog APL](https://www.dyalog.com/)
 
-Ready-made notebooks [are available](github.com/Dyalog/dyalog-jupyter-notebooks) too!
+Ready-made notebooks [are available](https://github.com/Dyalog/dyalog-jupyter-notebooks) too!
 
 ## Installation
 
