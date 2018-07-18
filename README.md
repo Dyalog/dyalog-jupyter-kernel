@@ -31,6 +31,10 @@ Ready-made notebooks [are available](https://github.com/Dyalog/dyalog-jupyter-no
    1. click *OK*
    1. click *OK*
 
+### APL keyboard and language bar
+
+A zero footprint in-browser language bar, key-bindings, and character compositions is available using [a bookmarklet](https://abrudz.github.io/lb/apl). After installation, launch a Jupiter notebook and then click on the bookmarklet.
+
 ## Running
 
 1. Start Jupyter notebook:  
