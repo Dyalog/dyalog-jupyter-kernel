@@ -1,6 +1,8 @@
 # [Jupyter](http://jupyter.org/) kernel for [Dyalog APL](https://www.dyalog.com/)
 
-Ready-made notebooks [are available](https://github.com/Dyalog/dyalog-jupyter-notebooks) too!
+## What is a Jupyter notebook and where can I get one?
+
+Introduction and a collection of ready-made notebooks are available [here](https://github.com/Dyalog/dyalog-jupyter-notebooks#what-is-a-jupyter-notebook).
 
 ## Installation
 
