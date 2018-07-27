@@ -1,6 +1,8 @@
 # [Jupyter](http://jupyter.org/) kernel for [Dyalog APL](https://www.dyalog.com/)
 
-Ready-made notebooks [are available](https://github.com/Dyalog/dyalog-jupyter-notebooks) too!
+## What is a Jupyter notebook and where can I get one?
+
+Introduction and a collection of ready-made notebooks are available [here](https://github.com/Dyalog/dyalog-jupyter-notebooks#what-is-a-jupyter-notebook).
 
 ## Installation
 
@@ -30,6 +32,10 @@ Ready-made notebooks [are available](https://github.com/Dyalog/dyalog-jupyter-no
    1. click *OK*
    1. click *OK*
    1. click *OK*
+
+### APL keyboard and language bar
+
+A zero footprint in-browser language bar, key-bindings, and character compositions is available using [a bookmarklet](https://abrudz.github.io/lb/apl). After installation, launch a Jupiter notebook and then click on the bookmarklet.
 
 ## Running
 
