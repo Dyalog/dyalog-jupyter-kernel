@@ -426,12 +426,8 @@ class DyalogKernel(Kernel):
                 err = False
                 data_collection =''
 
-                    # give Dyalog APL a chance to respond.
 
-                time.sleep(1)
-
-                while self.ride_receive():
-                    pass
+                self.ride_receive():
 
                 # as long as we have queue dq or RIDE PROMPT is not available... do loop
                 while (len(dq)>0 or not PROMPT_AVAILABLE):
@@ -465,6 +461,8 @@ class DyalogKernel(Kernel):
                     #actually we don't want echo
                     elif received[0]=='EchoInput':
                         pass
+                    if len(dq)==0:
+                        self.ride_receive()
                     #self.pa(received[1].get('input'))
 
             else:
