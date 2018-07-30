@@ -253,7 +253,8 @@ class DyalogKernel(Kernel):
                 dyalog_env = os.environ.copy()
                 dyalog_env['RIDE_INIT'] = 'SERVE::' + str(self._port).strip()
                 #start dyalog executable in xterm. Req: xterm must be installed. dyalog should be in the path
-                self.dyalog_subprocess  = subprocess.Popen(['xterm', '-e', ('dyalog ' + os.path.dirname(os.path.abspath(__file__)) + '/init.dws')], env=dyalog_env)
+                #self.dyalog_subprocess  = subprocess.Popen(['xterm', '-e', ('dyalog ' + os.path.dirname(os.path.abspath(__file__)) + '/init.dws')], env=dyalog_env)
+                self.dyalog_subprocess = subprocess.Popen(['dyalog', '+s', '-q', os.path.dirname(os.path.abspath(__file__)) + '/init.dws'], stdin=subprocess.PIPE, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, env=dyalog_env)
 
 
 
@@ -426,12 +427,7 @@ class DyalogKernel(Kernel):
                 err = False
                 data_collection =''
 
-                    # give Dyalog APL a chance to respond.
-
-                time.sleep(1)
-
-                while self.ride_receive():
-                    pass
+                self.ride_receive()
 
                 # as long as we have queue dq or RIDE PROMPT is not available... do loop
                 while (len(dq)>0 or not PROMPT_AVAILABLE):
@@ -465,6 +461,8 @@ class DyalogKernel(Kernel):
                     #actually we don't want echo
                     elif received[0]=='EchoInput':
                         pass
+                    if len(dq)==0:
+                        self.ride_receive()
                     #self.pa(received[1].get('input'))
 
             else:
