@@ -319,6 +319,7 @@ class DyalogKernel(Kernel):
                     try:
                         rideMessage = rideMessage.decode("utf-8")
                     except:
+                        writeln(rideMessage)
                         writeln("JSON parser error")
 
                     # json, fix all \r and \n. They should be escaped appropriately for JSON
