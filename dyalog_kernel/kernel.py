@@ -269,8 +269,7 @@ class DyalogKernel(Kernel):
                 #linux, darwin... etc
                 dyalog_env = os.environ.copy()
                 dyalog_env['RIDE_INIT'] = 'SERVE::' + str(self._port).strip()
-                #start dyalog executable in xterm. Req: xterm must be installed. dyalog should be in the path
-                #self.dyalog_subprocess  = subprocess.Popen(['xterm', '-e', ('dyalog ' + os.path.dirname(os.path.abspath(__file__)) + '/init.dws')], env=dyalog_env)
+                # dyalog should be in path
                 self.dyalog_subprocess = subprocess.Popen(['dyalog', '+s', '-q', os.path.dirname(os.path.abspath(__file__)) + '/init.dws'], stdin=subprocess.PIPE, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, env=dyalog_env)
 
 
@@ -436,9 +435,10 @@ class DyalogKernel(Kernel):
 
         if not silent:
             if self.connected:
-                code = code + '\n'
-                d = ["Execute", {"trace": 0, "text": code}]
-                self.ride_send(d)
+                for line in code.split():
+                    line= line + '\n'
+                    d = ["Execute", {"trace": 0, "text": line}]
+                    self.ride_send(d)
 
                 PROMPT_AVAILABLE = True
                 err = False
