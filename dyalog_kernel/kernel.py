@@ -5,7 +5,7 @@ import sys
 import time
 import subprocess
 import codecs
-
+                
 from collections import deque
 
 
@@ -16,7 +16,8 @@ from notebook.services.config import ConfigManager
 from os.path import isfile, join
 from bs4 import BeautifulSoup
 
-
+if sys.platform.lower().startswith('win'):
+    from winreg import *
 
 handShake1 = b'\x00\x00\x00\x1cRIDESupportedProtocols=2'
 handShake2 = b'\x00\x00\x00\x17RIDEUsingProtocol=2'
@@ -245,8 +246,19 @@ class DyalogKernel(Kernel):
         # if Dyalog APL and Jupyter executables are on the same host (localhost) let's start instance of Dyalog
         if DYALOG_HOST == '127.0.0.1':
             if sys.platform.lower().startswith('win'):
-                #we are running Windows. Please make sure Dyalog.exe is in path
-                self.dyalog_subprocess = subprocess.Popen(['dyalog.exe','RIDE_INIT=SERVE::' + str(self._port).strip(),  os.path.dirname(os.path.abspath(__file__)) + '/init.dws'])
+                #Windows. Let's find an installed version to use
+                hklmReg = ConnectRegistry(None,HKEY_LOCAL_MACHINE)
+                dyalogKey = OpenKey(hklmReg, r"SOFTWARE\Dyalog")
+                installCount = QueryInfoKey(dyalogKey)[0]
+                for n in range(installCount):
+                    currInstall = EnumKey(dyalogKey, installCount - (n + 1))
+                    if currInstall[:12] == "Dyalog APL/W":
+                        break
+                lastKey = OpenKey(hklmReg, r"SOFTWARE\\Dyalog\\" + currInstall)
+                dyalogPath = QueryValueEx(lastKey,"dyalog")[0] + "\\dyalog.exe"
+                CloseKey(dyalogKey)
+                CloseKey(lastKey)
+                self.dyalog_subprocess = subprocess.Popen([dyalogPath,'RIDE_INIT=SERVE::' + str(self._port).strip(),  os.path.dirname(os.path.abspath(__file__)) + '/init.dws'])
             else:
                 #linux, darwin... etc
                 dyalog_env = os.environ.copy()

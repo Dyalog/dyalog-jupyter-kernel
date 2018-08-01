@@ -15,18 +15,6 @@ Introduction and a collection of ready-made notebooks are available [here](https
    Linux: `install.sh`  
    Windows: `install.bat`  
 1. You may now delete the repository clone, if you wish to do so.
-1. Windows only:
-
-   1. <kbd>**⊞** Win</kbd>+<kbd>Pause</kbd>
-   1. click *Advanced system settings*
-   1. click *Environment Variables…*
-   1. click *System variables*
-   1. double click on *Path*
-   1. click *New*
-   1. type `C:\Program Files\Dyalog\Dyalog APL-64 17.0 Unicode` or whatever your install directory is
-   1. click *OK*
-   1. click *OK*
-   1. click *OK*
 
 ### APL keyboard and language bar
 
