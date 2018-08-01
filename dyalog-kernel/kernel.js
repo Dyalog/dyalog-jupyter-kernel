@@ -107,8 +107,8 @@ define(function(){
         var sw=4,swm=2 //sw:default indent unit (vim calls that "sw" for "shift width"), swm:indent unit for methods
         var icom=0;
         var dfnDepth=syn.dfnDepth=function(a){var r=0;for(var j=0;j<a.length;j++)a[j].t==='{'&&r++;return r}
-        CM.defineMIME('text/apl','apl')
-        CM.defineMode('apl',function(){
+        CM.defineMIME('text/apl-editor','apl-editor')
+        CM.defineMode('apl-editor',function(){
         var comMode=CM.getMode({},'text/apl-comments');if(!comMode.token||!comMode.startState)comMode=null
         return{
             startState:function(){
@@ -235,7 +235,7 @@ define(function(){
             else if(/^\s*:access/i.test(s))return la.t==='class'?la.oi:la.ii
             else return/^\s*:(?:end|else|andif|orif|case|until)/i.test(s)?la.oi:la.ii
             },
-            fold:'apl'
+            fold:'apl-editor'
         }
         })
         //stackStr(h): a string representation of the block stack in CodeMirror's state object "h"
@@ -243,18 +243,17 @@ define(function(){
         function stackStr(h){var a=h.a,r='';for(var i=0;i<a.length;i++)r+=a[i].t+' ';return r}
         var scmd=('classes clear cmd continue copy cs drop ed erase events fns holds intro lib load methods ns objects obs off'+
                 ' ops pcopy props reset save sh sic si sinl tid vars wsid xload').split(' ') //system commands
-        CM.defineMIME('text/apl-session','apl-session')
-        CM.defineMode('apl-session',function(cfg,modeCfg){
+        CM.defineMIME('text/apl','apl')
+        CM.defineMode('apl',function(cfg,modeCfg){
         //the session requires its own CodeMirror mode as it allows additional token types (system commands and user commands)
         //and it needs to enable syntax highlighting only in modified lines
-        var im=CM.getMode(cfg,'text/apl'), se=modeCfg.se //im:inner mode, se:the Session object
+        var im=CM.getMode(cfg,'text/apl-editor') //im:inner mode
         return{
             startState:function(){return{l:0}}, //.l:line number, .h:inner state
             copyState:function(h){h=CM.copyState({},h);h.h=CM.copyState(im,h.h);return h},
             blankLine:function(h){h.l++},
             token:function(sm,h){ //sm:stream,h:state
             var sol=sm.sol(),m //sol:start of line? m:regex match object
-            if(se.dirty[h.l]==null){sm.skipToEnd();h.l++;return}
             if(sol&&(m=sm.match(/^ *\)(\w+).*/))){h.l++;return!m[1]||scmd.indexOf(m[1].toLowerCase())<0?'apl-err':'apl-scmd'}
             if(sol&&(m=sm.match(/^ *\].*/))){h.l++;return'apl-ucmd'}
             if(sol){h.h=im.startState();delete h.h.hdr}
@@ -263,8 +262,8 @@ define(function(){
             }
         }
         })
-        ;['apl','apl-session'].forEach(function(x){CM.registerHelper('wordChars',x,RegExp('['+letter+'\\d]'))})
-        CM.registerHelper('fold','apl',function(cm,start){ //the old IDE refers to folding as "outlining"
+        ;['apl','apl-editor'].forEach(function(x){CM.registerHelper('wordChars',x,RegExp('['+letter+'\\d]'))})
+        CM.registerHelper('fold','apl-editor',function(cm,start){ //the old IDE refers to folding as "outlining"
         var l,l0=l=start.line,end=cm.lastLine()
         ,x0=stackStr(cm.getStateAfter(l0-1))                  //x0:the stackStr at the beginning of start.line
         ,y0=stackStr(cm.getStateAfter(l0))                    //y0:the stackStr at the end of start.line
@@ -277,7 +276,7 @@ define(function(){
         })
         function isPfx(x,y){return x===y.slice(0,x.length)} //is x is a prefix of y?
         customCSS();
-        [...document.getElementsByClassName('CodeMirror')].forEach(c => {
+        [...document.querySelectorAll('.code_cell .CodeMirror')].forEach(c => {
             c.CodeMirror.setOption('mode','apl');
         });
     };
