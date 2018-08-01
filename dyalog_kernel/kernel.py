@@ -316,11 +316,13 @@ class DyalogKernel(Kernel):
 
                 rideMessage = data[c_pos+8:c_pos+msg_size]
                 if ride_id=="RIDE":
+                    if rideMessage[:14] == b'["ReplyGetLog"':
+                        rideMessage = b'["ReplyGetLog",{"result":[]}]' # notebooks don't need a session log
                     try:
                         rideMessage = rideMessage.decode("utf-8")
-                    except:
-                        writeln(rideMessage)
+                    except: 
                         writeln("JSON parser error")
+                        return False
 
                     # json, fix all \r and \n. They should be escaped appropriately for JSON
                     rideMessage = rideMessage.replace('\n', '\\n')
@@ -337,9 +339,7 @@ class DyalogKernel(Kernel):
                         json_data.append(rideMessage)
                         json_data.append("String")
 
-                    #skip output of long log files
-                    if (json_data[0] != 'ReplyGetLog'):
-                        writeln("RECV " + rideMessage)
+                    writeln("RECV " + rideMessage)
                     dq.appendleft(json_data)
 
 
