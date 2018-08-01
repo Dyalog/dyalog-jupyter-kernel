@@ -258,7 +258,7 @@ class DyalogKernel(Kernel):
                 dyalogPath = QueryValueEx(lastKey,"dyalog")[0] + "\\dyalog.exe"
                 CloseKey(dyalogKey)
                 CloseKey(lastKey)
-                self.dyalog_subprocess = subprocess.Popen([dyalogPath,'RIDE_INIT=SERVE::' + str(self._port).strip(),  os.path.dirname(os.path.abspath(__file__)) + '/init.dws'])
+                self.dyalog_subprocess = subprocess.Popen([dyalogPath,"RIDE_SPAWNED=1",'RIDE_INIT=SERVE::' + str(self._port).strip(),  os.path.dirname(os.path.abspath(__file__)) + '/init.dws'])
             else:
                 #linux, darwin... etc
                 dyalog_env = os.environ.copy()
