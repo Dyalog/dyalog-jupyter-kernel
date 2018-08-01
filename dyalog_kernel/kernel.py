@@ -1,5 +1,6 @@
 import json
 import os
+#import signal
 import socket
 import sys
 import time
@@ -76,6 +77,9 @@ class DyalogKernel(Kernel):
 
     dyalog_subprocess = None
 
+    #def signal_handler(sig, frame):
+    #     self.ride_send(["StrongInterrupt",{}])
+    
     def out_error(self, s):
         _content = {
             'output_type': 'stream',
@@ -145,7 +149,6 @@ class DyalogKernel(Kernel):
 
     def dyalog_ride_connect(self):
 
-
         timeout = time.time() + RIDE_INIT_CONNECT_TIME_OUT
 
 
@@ -204,10 +207,13 @@ class DyalogKernel(Kernel):
                 while self.ride_receive():
                     pass
                 self.connected = True
-
-
-
-
+                #signal.signal(signal.SIGABRT, self.signal_handler) #activate interrupt handler
+                #signal.signal(signal.SIGFPE, self.signal_handler) #activate interrupt handler
+                #signal.signal(signal.SIGILL, self.signal_handler) #activate interrupt handler
+                #signal.signal(signal.SIGINT, self.signal_handler) #activate interrupt handler
+                #signal.signal(signal.SIGSEGV, self.signal_handler) #activate interrupt handler
+                #signal.signal(signal.SIGTERM, self.signal_handler) #activate interrupt handler
+                #signal.signal(signal.SIGBREAK, self.signal_handler) #activate interrupt handler
 
 
     def __init__(self, **kwargs):
@@ -426,7 +432,6 @@ class DyalogKernel(Kernel):
 
     def do_execute(self, code, silent, store_history=True, user_expressions=None,
                    allow_stdin=True):
-
         code = code.strip()
 
         if not silent:
