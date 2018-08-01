@@ -10,7 +10,8 @@ define(function(){
             src: local("APL385 Unicode"), url("//cdn.dyalog.com/fonts/Apl385.eot#iefix") format("embedded-opentype"), url("//cdn.dyalog.com/fonts/Apl385.woff") format("woff"), url("//cdn.dyalog.com/fonts/Apl385.ttf") format("truetype"), url("//cdn.dyalog.com/fonts/Apl385.svg#APL385") format("svg");
             /* Chrome < 4, Legacy iOS */
         }
-        [class^="cm-apl-"]{font-family:APL385,"DejaVu Sans Mono",monospace}
+        [class^="cm-apl-"],.output_subarea.output_html.rendered_html.output_result span{font-family:APL385,"DejaVu Sans Mono",monospace}
+        .output_subarea.output_html.rendered_html.output_result {line-height:1.17}
         .cm-apl-asgn{ color:#0000ff; }
         .cm-apl-sqbr{ color:#0000ff; }
         .cm-apl-com { color:#008888; }
