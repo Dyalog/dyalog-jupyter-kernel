@@ -3,7 +3,14 @@ define(function(){
 
     function customCSS() {
         const css =`
-        [class^="cm-apl-"]{font-family:"APL385 Unicode","DejaVu Sans Mono",monospace}
+        @font-face {
+            font-family: 'APL385';
+            src: url("//cdn.dyalog.com/fonts/Apl385.eot");
+            /* IE 9 Compatibility Mode */
+            src: local("APL385 Unicode"), url("//cdn.dyalog.com/fonts/Apl385.eot#iefix") format("embedded-opentype"), url("//cdn.dyalog.com/fonts/Apl385.woff") format("woff"), url("//cdn.dyalog.com/fonts/Apl385.ttf") format("truetype"), url("//cdn.dyalog.com/fonts/Apl385.svg#APL385") format("svg");
+            /* Chrome < 4, Legacy iOS */
+        }
+        [class^="cm-apl-"]{font-family:APL385,"DejaVu Sans Mono",monospace}
         .cm-apl-asgn{ color:#0000ff; }
         .cm-apl-sqbr{ color:#0000ff; }
         .cm-apl-com { color:#008888; }
