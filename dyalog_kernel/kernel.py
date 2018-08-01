@@ -49,12 +49,12 @@ class DyalogKernel(Kernel):
 
     implementation = 'Dyalog'
     implementation_version = __version__
-    language = 'apl'
+    language = 'APL'
     language_version = '0.1'
 
 
     language_info = {
-        'name': 'apl',
+        'name': 'APL',
         'mimetype': 'text/apl',
         'file_extension': '.apl'
     }
@@ -68,10 +68,9 @@ class DyalogKernel(Kernel):
     connected = False
 
 
-    # RIDE output will wrap at that width
-    # To save receive requests, lets put a relatively big number here
-
-    RIDE_PW = 80
+    # To save receive requests and prevent unneeded, lets put the max number here
+    
+    RIDE_PW = 32767
 
 
     dyalog_subprocess = None
@@ -199,7 +198,7 @@ class DyalogKernel(Kernel):
                 if len(dq) > 0:
                     received = dq.pop()
 
-                d = ["SetPW", {"pw": self.RIDE_PW}]  #99
+                d = ["SetPW", {"pw": self.RIDE_PW}]
                 self.ride_send(d)
                 while self.ride_receive():
                     pass

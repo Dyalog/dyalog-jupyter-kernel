@@ -3,6 +3,7 @@ define(function(){
 
     function customCSS() {
         const css =`
+        [class^="cm-apl-"]{font-family:"APL385 Unicode","DejaVu Sans Mono",monospace}
         .cm-apl-asgn{ color:#0000ff; }
         .cm-apl-sqbr{ color:#0000ff; }
         .cm-apl-com { color:#008888; }
