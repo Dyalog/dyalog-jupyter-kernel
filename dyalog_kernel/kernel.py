@@ -449,11 +449,12 @@ class DyalogKernel(Kernel):
                     d = ["Execute", {"trace": 0, "text": line}]
                     self.ride_send(d)
 
-                PROMPT_AVAILABLE = True
+                PROMPT_AVAILABLE = False
                 err = False
                 data_collection =''
 
-                self.ride_receive()
+                while self.ride_receive():
+                    pass
 
                 # as long as we have queue dq or RIDE PROMPT is not available... do loop
                 while (len(dq)>0 or not PROMPT_AVAILABLE):
@@ -488,7 +489,8 @@ class DyalogKernel(Kernel):
                     elif received[0]=='EchoInput':
                         pass
                     if len(dq)==0:
-                        self.ride_receive()
+                        while self.ride_receive():
+                            pass
                     #self.pa(received[1].get('input'))
 
             else:
