@@ -244,8 +244,8 @@ define(function(){
         function stackStr(h){var a=h.a,r='';for(var i=0;i<a.length;i++)r+=a[i].t+' ';return r}
         var scmd=('classes clear cmd continue copy cs drop ed erase events fns holds intro lib load methods ns objects obs off'+
                 ' ops pcopy props reset save sh sic si sinl tid vars wsid xload').split(' ') //system commands
-        CM.defineMIME('text/apl','apl')
-        CM.defineMode('apl',function(cfg,modeCfg){
+        CM.defineMIME('text/apl','APL')
+        CM.defineMode('APL',function(cfg,modeCfg){
         //the session requires its own CodeMirror mode as it allows additional token types (system commands and user commands)
         //and it needs to enable syntax highlighting only in modified lines
         var im=CM.getMode(cfg,'text/apl-editor') //im:inner mode
@@ -263,7 +263,7 @@ define(function(){
             }
         }
         })
-        ;['apl','apl-editor'].forEach(function(x){CM.registerHelper('wordChars',x,RegExp('['+letter+'\\d]'))})
+        ;['APL','apl-editor'].forEach(function(x){CM.registerHelper('wordChars',x,RegExp('['+letter+'\\d]'))})
         CM.registerHelper('fold','apl-editor',function(cm,start){ //the old IDE refers to folding as "outlining"
         var l,l0=l=start.line,end=cm.lastLine()
         ,x0=stackStr(cm.getStateAfter(l0-1))                  //x0:the stackStr at the beginning of start.line
@@ -278,7 +278,7 @@ define(function(){
         function isPfx(x,y){return x===y.slice(0,x.length)} //is x is a prefix of y?
         customCSS();
         [...document.querySelectorAll('.code_cell .CodeMirror')].forEach(c => {
-            c.CodeMirror.setOption('mode','apl');
+            c.CodeMirror.setOption('mode','APL');
         });
     };
 
