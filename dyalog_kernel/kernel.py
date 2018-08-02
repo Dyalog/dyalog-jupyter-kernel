@@ -5,17 +5,14 @@ import socket
 import sys
 import time
 import subprocess
-import codecs
-                
+import re
+
 from collections import deque
 
 
-from pathlib import Path
 from ipykernel.kernelbase import Kernel
 from dyalog_kernel import __version__
 from notebook.services.config import ConfigManager
-from os.path import isfile, join
-from bs4 import BeautifulSoup
 
 if sys.platform.lower().startswith('win'):
     from winreg import *
@@ -65,8 +62,6 @@ class DyalogKernel(Kernel):
 
 
     banner = "Dyalog APL kernel"
-    dyalogTCP = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    dyalogTCP.settimeout(TCP_TIMEOUT)
     connected = False
 
 
@@ -155,11 +150,14 @@ class DyalogKernel(Kernel):
 
 
         while True:
+            self.dyalogTCP = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            self.dyalogTCP.settimeout(TCP_TIMEOUT)
             try:
                 self.dyalogTCP.connect((DYALOG_HOST, self._port))
                 break
             except socket.error as msg:
                 #writeln(msg)
+                self.dyalogTCP.close
                 if time.time()>timeout:
                     break
 
@@ -269,8 +267,18 @@ class DyalogKernel(Kernel):
                 #linux, darwin... etc
                 dyalog_env = os.environ.copy()
                 dyalog_env['RIDE_INIT'] = 'SERVE::' + str(self._port).strip()
-                # dyalog should be in path
-                self.dyalog_subprocess = subprocess.Popen(['dyalog', '+s', '-q', os.path.dirname(os.path.abspath(__file__)) + '/init.dws'], stdin=subprocess.PIPE, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, env=dyalog_env)
+                dyalog_env['RIDE_SPAWNED'] = '1'
+                if sys.platform.lower() == "darwin":
+                    for d in sorted(os.listdir('/Applications')):
+                        if re.match('^Dyalog-\d+\.\d+\.app$',d):
+                            dyalog = '/Applications/'+d+'/Contents/Resources/Dyalog/mapl'
+                else:
+                    for v in sorted(os.listdir('/opt/mdyalog')):
+                        if re.match('^\d+\.\d+$',v):
+                            dyalog = '/opt/mdyalog/'+v+'/'
+                            dyalog += sorted(os.listdir(dyalog))[-1]+'/'
+                            dyalog += sorted(os.listdir(dyalog))[-1]+'/'+'mapl'
+                self.dyalog_subprocess = subprocess.Popen([dyalog, '+s', '-q', os.path.dirname(os.path.abspath(__file__)) + '/init.dws'], stdin=subprocess.PIPE, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, env=dyalog_env)
 
 
 
@@ -435,7 +443,8 @@ class DyalogKernel(Kernel):
 
         if not silent:
             if self.connected:
-                for line in code.split():
+                # the windows interpreter can only handle ~125 chacaters at a time
+                for line in code.split('\n'):
                     line= line + '\n'
                     d = ["Execute", {"trace": 0, "text": line}]
                     self.ride_send(d)
