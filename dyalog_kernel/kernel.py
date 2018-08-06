@@ -443,55 +443,63 @@ class DyalogKernel(Kernel):
 
         if not silent:
             if self.connected:
-                # the windows interpreter can only handle ~125 chacaters at a time
-                for line in code.split('\n'):
-                    line= line + '\n'
-                    d = ["Execute", {"trace": 0, "text": line}]
-                    self.ride_send(d)
-
-                PROMPT_AVAILABLE = False
-                err = False
-                data_collection =''
-
-                while self.ride_receive():
-                    pass
-
-                # as long as we have queue dq or RIDE PROMPT is not available... do loop
-                while (len(dq)>0 or not PROMPT_AVAILABLE):
-
-                    received = ['','']
-                    # in case prompt is not available e.g time consuming calculations, make sure dq is not empty.
-                    if len(dq) > 0:
-                        received = dq.pop()
-
-                    if received[0]=='AppendSessionOutput':
-                        if not PROMPT_AVAILABLE:
-                            data_collection = data_collection + received[1].get('result')
-                    elif received[0]=='SetPromptType':
-                        if received[1].get('type') == 0:
-                            PROMPT_AVAILABLE = False
-                        else:
-                            PROMPT_AVAILABLE = True
-                            if len(data_collection) > 0:
-                                if err:
-                                    self.out_error(data_collection)
-                                else:
-                                    self.out_result(data_collection)
-                                data_collection = ''
-                            err = False
-                    elif received[0]=='ShowHTML':
-                        self.out_html(received[1].get('html'))
-                    elif received[0]=='HadError':
-                        # in case of error, set the flag err
-                        # it should be reset back to False only when prompt is available again.
-                        err = True
-                    #actually we don't want echo
-                    elif received[0]=='EchoInput':
-                        pass
-                    if len(dq)==0:
+                try:
+                    # the windows interpreter can only handle ~125 chacaters at a time
+                    for line in code.split('\n'):
+                        line= line + '\n'
+                        d = ["Execute", {"trace": 0, "text": line}]
+                        self.ride_send(d)
+   
+                        dq.clear()
+                        PROMPT_AVAILABLE = False
+                        err = False
+                        data_collection =''
+    
                         while self.ride_receive():
                             pass
-                    #self.pa(received[1].get('input'))
+    
+                        # as long as we have queue dq or RIDE PROMPT is not available... do loop
+                        while (len(dq)>0 or not PROMPT_AVAILABLE):
+    
+                            received = ['','']
+                            # in case prompt is not available e.g time consuming calculations, make sure dq is not empty.
+                            if len(dq) > 0:
+                                received = dq.pop()
+    
+                            if received[0]=='AppendSessionOutput':
+                                if not PROMPT_AVAILABLE:
+                                    data_collection = data_collection + received[1].get('result')
+                            elif received[0]=='SetPromptType':
+                                if received[1].get('type') == 0:
+                                    PROMPT_AVAILABLE = False
+                                else:
+                                    PROMPT_AVAILABLE = True
+                                    if len(data_collection) > 0:
+                                        if err:
+                                            self.out_error(data_collection)
+                                        else:
+                                            self.out_result(data_collection)
+                                        data_collection = ''
+                                    err = False
+                            elif received[0]=='ShowHTML':
+                                self.out_html(received[1].get('html'))
+                            elif received[0]=='HadError':
+                                # in case of error, set the flag err
+                                # it should be reset back to False only when prompt is available again.
+                                err = True
+                            #actually we don't want echo
+                            elif received[0]=='EchoInput':
+                                pass
+                            if len(dq)==0:
+                                while self.ride_receive():
+                                    pass
+                            #self.pa(received[1].get('input'))
+                except KeyboardInterrupt:
+                    self.ride_send(["StrongInterrupt", {}])
+                    self.out_error('Interrupt')
+                    while self.ride_receive():
+                        pass
+                    dq.clear()
 
             else:
                 self.out_error('Dyalog APL not connected')
