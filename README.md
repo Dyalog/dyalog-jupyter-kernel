@@ -28,8 +28,6 @@ To start a web server and try to point your web browser at it, proceed as follow
 ### Windows
 1. Open *Jupyter Notebook* from the Start menu
 
-This will start a web server and try to point your web browser at it. From the web interface you can use the *New* drop-down to create a new Dyalog APL notebook, or navigate to and click on any existing notebook (a file with the `.ipynb` extension) to open it. This interface is started as follows:
-
 ### Linux
 1. Open a terminal window  
 1. Optionally change directory (`cd mydirectory`) to where you want to place new notebooks or load notebooks from (or a parent directory thereof).
