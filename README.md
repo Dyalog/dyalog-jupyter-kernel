@@ -18,7 +18,7 @@ Introduction and a collection of ready-made notebooks are available [here](https
 
 ### APL keyboard and language bar
 
-A zero footprint in-browser language bar, key-bindings, and character compositions is available using [a bookmarklet](https://abrudz.github.io/lb/apl). After installation, launch a Jupyter notebook and then click on the bookmarklet.
+You can add an APL language bar which includes key-bindings and character compositions to your browser. It is available [here](https://abrudz.github.io/lb/apl) in the form of a bookmark. After installation, launch a Jupyter notebook and then click on the bookmark.
 
 ## Running
 
