@@ -1,6 +1,5 @@
 import json
 import os
-#import signal
 import socket
 import sys
 import time
@@ -72,9 +71,6 @@ class DyalogKernel(Kernel):
 
     dyalog_subprocess = None
 
-    #def signal_handler(sig, frame):
-    #     self.ride_send(["StrongInterrupt",{}])
-    
     def out_error(self, s):
         _content = {
             'output_type': 'stream',
@@ -205,13 +201,6 @@ class DyalogKernel(Kernel):
                 while self.ride_receive():
                     pass
                 self.connected = True
-                #signal.signal(signal.SIGABRT, self.signal_handler) #activate interrupt handler
-                #signal.signal(signal.SIGFPE, self.signal_handler) #activate interrupt handler
-                #signal.signal(signal.SIGILL, self.signal_handler) #activate interrupt handler
-                #signal.signal(signal.SIGINT, self.signal_handler) #activate interrupt handler
-                #signal.signal(signal.SIGSEGV, self.signal_handler) #activate interrupt handler
-                #signal.signal(signal.SIGTERM, self.signal_handler) #activate interrupt handler
-                #signal.signal(signal.SIGBREAK, self.signal_handler) #activate interrupt handler
 
 
     def __init__(self, **kwargs):
@@ -262,12 +251,13 @@ class DyalogKernel(Kernel):
                 dyalogPath = QueryValueEx(lastKey,"dyalog")[0] + "\\dyalog.exe"
                 CloseKey(dyalogKey)
                 CloseKey(lastKey)
-                self.dyalog_subprocess = subprocess.Popen([dyalogPath,"RIDE_SPAWNED=1",'RIDE_INIT=SERVE::' + str(self._port).strip(),  os.path.dirname(os.path.abspath(__file__)) + '/init.dws'])
+                self.dyalog_subprocess = subprocess.Popen([dyalogPath,"RIDE_SPAWNED=1",'RIDE_INIT=SERVE::' + str(self._port).strip(), 'LOG_FILE=nul',  os.path.dirname(os.path.abspath(__file__)) + '/init.dws'])
             else:
                 #linux, darwin... etc
                 dyalog_env = os.environ.copy()
                 dyalog_env['RIDE_INIT'] = 'SERVE::' + str(self._port).strip()
                 dyalog_env['RIDE_SPAWNED'] = '1'
+                dyalog_env['LOG_FILE'] = '/dev/null'
                 if sys.platform.lower() == "darwin":
                     for d in sorted(os.listdir('/Applications')):
                         if re.match('^Dyalog-\d+\.\d+\.app$',d):
