@@ -34,6 +34,8 @@ This will start a web server and try to point your web browser at it. From the w
 
 This will start a web server and try to point your web browser at it. From the web interface you can use the *New* drop-down to create a new Dyalog APL notebook, or navigate to and click on any existing notebook (a file with the `.ipynb` extension) to open it.
 
+### Troubleshooting
+
 If you get the message `OSError: [Errno 99] Cannot assign requested address` try:
 
 `jupyter-notebook --ip=0.0.0.0 --port=8080` or some other port number.
