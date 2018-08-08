@@ -65,7 +65,7 @@ class DyalogKernel(Kernel):
 
 
     # To save receive requests and prevent unneeded, lets put the max number here
-    
+
     RIDE_PW = 32767
 
 
@@ -221,7 +221,7 @@ class DyalogKernel(Kernel):
         # lets find first available port, starting from default DYALOG_PORT (:4502)
         # this makes sense only if Dyalog APL and Jupyter executables are on the same host (localhost)
         if DYALOG_HOST == '127.0.0.1':
-            
+
             while True:
                 sock = socket.socket(socket.AF_INET,socket.SOCK_STREAM)
                 result = sock.connect_ex((str(DYALOG_HOST).strip(),self._port))
@@ -312,7 +312,7 @@ class DyalogKernel(Kernel):
         while True:
             #no RIDE message can be less then 8 bytes in length
             if len(data)>8:
-        
+
                 if sys.version_info[0]<3:
                     ch1 = data[c_pos + 4].decode("utf-8")
                     ch2 = data[c_pos + 5].decode("utf-8")
@@ -321,9 +321,9 @@ class DyalogKernel(Kernel):
                     ride_id = ch1+ch2+ch3+ch4
                 else:
                     ride_id = chr(data[c_pos+4]) + chr(data[c_pos+5]) + chr(data[c_pos+6]) + chr(data[c_pos+7])
-                
-                
-                
+
+
+
                 if sys.version_info[0]<3:
                     msg_size = ord(data[c_pos])*0x1000000+ord(data[c_pos+1])*0x10000+ord(data[c_pos+2])*0x100+ord(data[c_pos+3])
                 else:
@@ -335,7 +335,7 @@ class DyalogKernel(Kernel):
                         rideMessage = b'["ReplyGetLog",{"result":[]}]' # notebooks don't need a session log
                     try:
                         rideMessage = rideMessage.decode("utf-8")
-                    except: 
+                    except:
                         writeln("JSON parser error")
                         return False
 
@@ -433,79 +433,83 @@ class DyalogKernel(Kernel):
 
         if not silent:
             if self.connected:
-                try:
-                    # the windows interpreter can only handle ~125 chacaters at a time
-                    for line in code.split('\n'):
-                        line= line + '\n'
-                        d = ["Execute", {"trace": 0, "text": line}]
-                        self.ride_send(d)
-   
-                        dq.clear()
-                        PROMPT_AVAILABLE = False
-                        err = False
-                        data_collection =''
-    
+                lines = code.split('\n')
+                if lines[0] == '%define':
+                    self.define_lines(lines[1::])
+                else:
+                    try:
+                        # the windows interpreter can only handle ~125 chacaters at a time
+                        for line in lines:
+                            line= line + '\n'
+                            d = ["Execute", {"trace": 0, "text": line}]
+                            self.ride_send(d)
+
+                            dq.clear()
+                            PROMPT_AVAILABLE = False
+                            err = False
+                            data_collection =''
+
+                            while self.ride_receive():
+                                pass
+
+                            # as long as we have queue dq or RIDE PROMPT is not available... do loop
+                            while (len(dq)>0 or not PROMPT_AVAILABLE):
+
+                                received = ['','']
+                                # in case prompt is not available e.g time consuming calculations, make sure dq is not empty.
+                                if len(dq) > 0:
+                                    received = dq.pop()
+
+                                if received[0]=='AppendSessionOutput':
+                                    if not PROMPT_AVAILABLE:
+                                        data_collection = data_collection + received[1].get('result')
+                                elif received[0]=='SetPromptType':
+                                    pt = received[1].get('type')
+                                    if pt == 0:
+                                        PROMPT_AVAILABLE = False
+                                    elif pt == 1:
+                                        PROMPT_AVAILABLE = True
+                                        if len(data_collection) > 0:
+                                            if err:
+                                                self.out_error(data_collection)
+                                            else:
+                                                self.out_result(data_collection)
+                                            data_collection = ''
+                                        err = False
+                                    elif pt == 2:
+                                        self.ride_send(["Execute", {"trace": 0, "text": "→\n"}])
+                                        raise ValueError('INPUT THROUGH ⎕ IS NOT SUPPORTED IN JUPYTER NOTEBOOK')
+                                    elif pt == 4:
+                                        self.ride_send(["Execute", {"trace": 0, "text": "INPUT THROUGH ⍞ IS NOT SUPPORTED IN JUPYTER NOTEBOOK\n"}])
+                                        self.ride_send(['StrongInterrupt', {}])
+                                        raise ValueError('INPUT THROUGH ⍞ IS NOT SUPPORTED IN JUPYTER NOTEBOOK')
+
+                                elif received[0]=='ShowHTML':
+                                    self.out_html(received[1].get('html'))
+                                elif received[0]=='HadError':
+                                    # in case of error, set the flag err
+                                    # it should be reset back to False only when prompt is available again.
+                                    err = True
+                                #actually we don't want echo
+                                elif received[0]=='EchoInput':
+                                    pass
+                                if len(dq)==0:
+                                    while self.ride_receive():
+                                        pass
+                                #self.pa(received[1].get('input'))
+                    except KeyboardInterrupt:
+                        self.ride_send(["StrongInterrupt", {}])
+                        time.sleep(0.1)
+                        self.out_error('Interrupt')
                         while self.ride_receive():
                             pass
-    
-                        # as long as we have queue dq or RIDE PROMPT is not available... do loop
-                        while (len(dq)>0 or not PROMPT_AVAILABLE):
-    
-                            received = ['','']
-                            # in case prompt is not available e.g time consuming calculations, make sure dq is not empty.
-                            if len(dq) > 0:
-                                received = dq.pop()
-    
-                            if received[0]=='AppendSessionOutput':
-                                if not PROMPT_AVAILABLE:
-                                    data_collection = data_collection + received[1].get('result')
-                            elif received[0]=='SetPromptType':
-                                pt = received[1].get('type')
-                                if pt == 0:
-                                    PROMPT_AVAILABLE = False
-                                elif pt == 1:
-                                    PROMPT_AVAILABLE = True
-                                    if len(data_collection) > 0:
-                                        if err:
-                                            self.out_error(data_collection)
-                                        else:
-                                            self.out_result(data_collection)
-                                        data_collection = ''
-                                    err = False
-                                elif pt == 2:
-                                    self.ride_send(["Execute", {"trace": 0, "text": "→\n"}])
-                                    raise ValueError('INPUT THROUGH ⎕ IS NOT SUPPORTED IN JUPYTER NOTEBOOK')
-                                elif pt == 4:
-                                    self.ride_send(["Execute", {"trace": 0, "text": "INPUT THROUGH ⍞ IS NOT SUPPORTED IN JUPYTER NOTEBOOK\n"}])
-                                    self.ride_send(['StrongInterrupt', {}])
-                                    raise ValueError('INPUT THROUGH ⍞ IS NOT SUPPORTED IN JUPYTER NOTEBOOK')
-
-                            elif received[0]=='ShowHTML':
-                                self.out_html(received[1].get('html'))
-                            elif received[0]=='HadError':
-                                # in case of error, set the flag err
-                                # it should be reset back to False only when prompt is available again.
-                                err = True
-                            #actually we don't want echo
-                            elif received[0]=='EchoInput':
-                                pass
-                            if len(dq)==0:
-                                while self.ride_receive():
-                                    pass
-                            #self.pa(received[1].get('input'))
-                except KeyboardInterrupt:
-                    self.ride_send(["StrongInterrupt", {}])
-                    time.sleep(0.1)
-                    self.out_error('Interrupt')
-                    while self.ride_receive():
-                        pass
-                    dq.clear()
-                except ValueError as err:
-                    time.sleep(0.1)
-                    self.out_error(str(err))
-                    while self.ride_receive():
-                        pass
-                    dq.clear()
+                        dq.clear()
+                    except ValueError as err:
+                        time.sleep(0.1)
+                        self.out_error(str(err))
+                        while self.ride_receive():
+                            pass
+                        dq.clear()
 
             else:
                 self.out_error('Dyalog APL not connected')
@@ -523,6 +527,18 @@ class DyalogKernel(Kernel):
 
         return reply_content
 
+
+    def define_lines(self, lines):
+        self.ride_send(["Execute", {"trace": 0, "text": "⎕SE.Dyalog.IpyNS←⊂':namespace'\n"}])
+        for line in lines:
+            quoted = re.sub("(^|'|$)", "'\\1", line)
+            self.ride_send(["Execute", {"trace": 0, "text": "⎕SE.Dyalog.IpyNS,←⊂"+quoted+"\n"}])
+        self.ride_send(["Execute", {"trace": 0, "text": "⎕SE.Dyalog.IpyNS,←⊂':endnamespace'\n"}])
+        self.ride_send(["Execute", {"trace": 0, "text": "'#'⎕NS⎕FIX⎕SE.Dyalog.IpyNS\n"}])
+        self.ride_send(["Execute", {"trace": 0, "text": "⎕EX'⎕SE.Dyalog.IpyNS'"}])
+        while self.ride_receive():
+            pass
+        dq.clear()
 
 
 
