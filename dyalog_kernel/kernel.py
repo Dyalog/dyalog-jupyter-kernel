@@ -491,6 +491,8 @@ class DyalogKernel(Kernel):
                                     # it should be reset back to False only when prompt is available again.
                                     err = True
                                 #actually we don't want echo
+                                elif received[0]=='OpenWindow':
+                                    self.ride_send(["Cutback", {"win": received[1].get("debugger")}])
                                 elif received[0]=='EchoInput':
                                     pass
                                 if len(dq)==0:
