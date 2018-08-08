@@ -153,7 +153,7 @@ class DyalogKernel(Kernel):
                 break
             except socket.error as msg:
                 #writeln(msg)
-                self.dyalogTCP.close
+                self.dyalogTCP.close()
                 if time.time()>timeout:
                     break
 
@@ -170,7 +170,7 @@ class DyalogKernel(Kernel):
 
         if received[0] == handShake1[8:].decode("utf-8"):
             # handshake1
-            self.dyalogTCP.send(handShake1)
+            self.dyalogTCP.sendall(handShake1)
             writeln("SEND " + handShake1[8:].decode("utf-8"))
             # handshake2
             while self.ride_receive():
@@ -179,7 +179,7 @@ class DyalogKernel(Kernel):
                 received = dq.pop()
             if received[0] == handShake2[8:].decode("utf-8"):
                 # handshake2
-                self.dyalogTCP.send(handShake2)
+                self.dyalogTCP.sendall(handShake2)
                 writeln("SEND " + handShake2[8:].decode("utf-8"))
 
                 d = ["Identify", {"identity": 1}]
@@ -389,7 +389,7 @@ class DyalogKernel(Kernel):
         _data[2] = (l >> 8) & 0xff
         _data[3] = l & 0xff
 
-        self.dyalogTCP.send(_data)
+        self.dyalogTCP.sendall(_data)
         writeln("SEND " + _data[8:].decode("utf-8"))
 
 
@@ -460,9 +460,10 @@ class DyalogKernel(Kernel):
                                 if not PROMPT_AVAILABLE:
                                     data_collection = data_collection + received[1].get('result')
                             elif received[0]=='SetPromptType':
-                                if received[1].get('type') == 0:
+                                pt = received[1].get('type')
+                                if pt == 0:
                                     PROMPT_AVAILABLE = False
-                                else:
+                                elif pt == 1:
                                     PROMPT_AVAILABLE = True
                                     if len(data_collection) > 0:
                                         if err:
@@ -471,6 +472,14 @@ class DyalogKernel(Kernel):
                                             self.out_result(data_collection)
                                         data_collection = ''
                                     err = False
+                                elif pt == 2:
+                                    self.ride_send(["Execute", {"trace": 0, "text": "→\n"}])
+                                    raise ValueError('INPUT THROUGH ⎕ IS NOT SUPPORTED IN JUPYTER NOTEBOOK')
+                                elif pt == 4:
+                                    self.ride_send(["Execute", {"trace": 0, "text": "INPUT THROUGH ⍞ IS NOT SUPPORTED IN JUPYTER NOTEBOOK\n"}])
+                                    self.ride_send(['StrongInterrupt', {}])
+                                    raise ValueError('INPUT THROUGH ⍞ IS NOT SUPPORTED IN JUPYTER NOTEBOOK')
+
                             elif received[0]=='ShowHTML':
                                 self.out_html(received[1].get('html'))
                             elif received[0]=='HadError':
@@ -486,7 +495,14 @@ class DyalogKernel(Kernel):
                             #self.pa(received[1].get('input'))
                 except KeyboardInterrupt:
                     self.ride_send(["StrongInterrupt", {}])
+                    time.sleep(0.1)
                     self.out_error('Interrupt')
+                    while self.ride_receive():
+                        pass
+                    dq.clear()
+                except ValueError as err:
+                    time.sleep(0.1)
+                    self.out_error(str(err))
                     while self.ride_receive():
                         pass
                     dq.clear()
