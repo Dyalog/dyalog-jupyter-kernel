@@ -537,7 +537,7 @@ class DyalogKernel(Kernel):
             self.ride_send(["Execute", {"trace": 0, "text": "⎕SE.Dyalog.IpyNS,←⊂,"+quoted+"\n"}])
         self.ride_send(["Execute", {"trace": 0, "text": "⎕SE.Dyalog.IpyNS,←⊂':endnamespace'\n"}])
         self.ride_send(["Execute", {"trace": 0, "text": "'#'⎕NS⎕FIX⎕SE.Dyalog.IpyNS\n"}])
-        self.ride_send(["Execute", {"trace": 0, "text": "⎕EX'⎕SE.Dyalog.IpyNS'"}])
+        self.ride_send(["Execute", {"trace": 0, "text": "⎕EX'⎕SE.Dyalog.IpyNS'\n"}])
 
 
     def do_shutdown(self, restart):
