@@ -483,7 +483,6 @@ class DyalogKernel(Kernel):
                                     raise ValueError('INPUT THROUGH ⎕ IS NOT SUPPORTED IN JUPYTER NOTEBOOK')
                                 elif pt == 4:
                                     self.ride_send(["Execute", {"trace": 0, "text": "INPUT THROUGH ⍞ IS NOT SUPPORTED IN JUPYTER NOTEBOOK\n"}])
-                                    self.ride_send(['StrongInterrupt', {}])
                                     raise ValueError('INPUT THROUGH ⍞ IS NOT SUPPORTED IN JUPYTER NOTEBOOK')
 
                             elif received[0]=='ShowHTML':
