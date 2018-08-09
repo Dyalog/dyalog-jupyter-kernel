@@ -436,6 +436,7 @@ class DyalogKernel(Kernel):
                 lines = code.split('\n')
                 if lines[0].lower() == '%define':
                     self.define_lines(lines[1::])
+                    lines = ['⍬⊤⍬']
                 try:
                     # the windows interpreter can only handle ~125 chacaters at a time
                     for line in lines:
