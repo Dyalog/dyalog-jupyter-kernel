@@ -331,8 +331,6 @@ class DyalogKernel(Kernel):
 
                 rideMessage = data[c_pos+8:c_pos+msg_size]
                 if ride_id=="RIDE":
-                    if rideMessage[:14] == b'["ReplyGetLog"':
-                        rideMessage = b'["ReplyGetLog",{"result":[]}]' # notebooks don't need a session log
                     try:
                         rideMessage = rideMessage.decode("utf-8")
                     except:
