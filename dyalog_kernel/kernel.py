@@ -518,7 +518,7 @@ class DyalogKernel(Kernel):
                     if not TRACE:
                         self.ride_send(["Execute", {"trace": 0, "text": "→"}])
                     time.sleep(0.1)
-                    self.out_error('Interrupt')
+                    self.out_error('INTERRUPT')
                     while self.ride_receive():
                         pass
                     dq.clear()
