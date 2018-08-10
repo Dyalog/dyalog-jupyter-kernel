@@ -30,6 +30,7 @@ _port = DYALOG_PORT
 #no of sec waiting for initial RIDE handshake. Slower systems should be greater no. of sec, to give dyalog a chance to start
 RIDE_INIT_CONNECT_TIME_OUT = 3  #seconds
 
+TRACE = False   # Can be set by %trace on/off.
 
 dq = deque()
 
@@ -427,14 +428,26 @@ class DyalogKernel(Kernel):
 
     def do_execute(self, code, silent, store_history=True, user_expressions=None,
                    allow_stdin=True):
+        global TRACE
         code = code.strip()
 
         if not silent:
             if self.connected:
                 lines = code.split('\n')
                 if lines[0].lower() == '%define':
-                    self.define_lines(lines[1::])
+                    self.define_lines(lines[1:])
                     lines = ['⍬⊤⍬']
+                match = re.search('^%trace\s+(\w+)$', lines[0].lower(), re.IGNORECASE)
+                if match:
+                    trace = match.group(1)
+                    if trace == 'on':
+                        TRACE = True
+                    elif trace == 'off':
+                        TRACE = False
+                        self.ride_send(["Execute", {"trace": 0,"text": "→\n"}])
+                    else:
+                        self.out_error('UNDEFINED ARGUMENT TO %trace, USE EITHER on OR off')
+                    lines = lines[1:]
                 try:
                     # the windows interpreter can only handle ~125 chacaters at a time
                     for line in lines:
@@ -492,7 +505,8 @@ class DyalogKernel(Kernel):
                                 err = True
                             #actually we don't want echo
                             elif received[0]=='OpenWindow':
-                                self.ride_send(["Execute", {"trace": 0, "text": "→\n"}])
+                                if not TRACE:
+                                    self.ride_send(["Execute", {"trace": 0, "text": "→\n"}])
                             elif received[0]=='EchoInput':
                                 pass
                             if len(dq)==0:
@@ -501,8 +515,10 @@ class DyalogKernel(Kernel):
                             #self.pa(received[1].get('input'))
                 except KeyboardInterrupt:
                     self.ride_send(["StrongInterrupt", {}])
+                    if not TRACE:
+                        self.ride_send(["Execute", {"trace": 0, "text": "→\n"}])
                     time.sleep(0.1)
-                    self.out_error('Interrupt')
+                    self.out_error('INTERRUPT')
                     while self.ride_receive():
                         pass
                     dq.clear()
@@ -522,10 +538,6 @@ class DyalogKernel(Kernel):
                 'payload': [],
                 'user_expressions': {},
                 }
-
-
-
-
 
         return reply_content
 
