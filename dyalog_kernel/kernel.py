@@ -516,7 +516,7 @@ class DyalogKernel(Kernel):
                 except KeyboardInterrupt:
                     self.ride_send(["StrongInterrupt", {}])
                     if not TRACE:
-                        self.ride_send(["Execute", {"trace": 0, "text": "→"}])
+                        self.ride_send(["Execute", {"trace": 0, "text": "→\n"}])
                     time.sleep(0.1)
                     self.out_error('INTERRUPT')
                     while self.ride_receive():
