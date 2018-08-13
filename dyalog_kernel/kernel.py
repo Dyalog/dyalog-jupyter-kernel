@@ -452,7 +452,7 @@ class DyalogKernel(Kernel):
                     # the windows interpreter can only handle ~125 chacaters at a time
                     for line in lines:
                         if re.match('^\\s*∇', line):
-                            self.out_error('USE %define INSTEAD OF THE ∇ EDITOR')
+                            self.out_error('JUPYTER NOTEBOOK: Use %define instead of the ∇ editor')
                             break
                         line= line + '\n'
                         d = ["Execute", {"trace": 0, "text": line}]
@@ -492,10 +492,10 @@ class DyalogKernel(Kernel):
                                     err = False
                                 elif pt == 2:
                                     self.ride_send(["Execute", {"trace": 0, "text": "→\n"}])
-                                    raise ValueError('INPUT THROUGH ⎕ IS NOT SUPPORTED IN JUPYTER NOTEBOOK')
+                                    raise ValueError('JUPYTER NOTEBOOK: Input through ⎕ is not supported')
                                 elif pt == 4:
-                                    self.ride_send(["Execute", {"trace": 0, "text": "INPUT THROUGH ⍞ IS NOT SUPPORTED IN JUPYTER NOTEBOOK\n"}])
-                                    raise ValueError('INPUT THROUGH ⍞ IS NOT SUPPORTED IN JUPYTER NOTEBOOK')
+                                    time.sleep(1)
+                                    raise ValueError('JUPYTER NOTEBOOK: Input through ⍞ is not supported')
 
                             elif received[0]=='ShowHTML':
                                 self.out_html(received[1].get('html'))
