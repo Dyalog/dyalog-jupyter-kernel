@@ -545,7 +545,7 @@ class DyalogKernel(Kernel):
     def define_lines(self, lines):
         self.ride_send(["Execute", {"trace": 0, "text": "⎕SE.Dyalog.IpyNS←⊂':namespace'\n"}])
         for line in lines:
-            quoted = re.sub("(^|'|$)", "'\\1", line)
+            quoted = "'"+line.replace("'","''")+"'"
             self.ride_send(["Execute", {"trace": 0, "text": "⎕SE.Dyalog.IpyNS,←⊂,"+quoted+"\n"}])
         self.ride_send(["Execute", {"trace": 0, "text": "⎕SE.Dyalog.IpyNS,←⊂':endnamespace'\n"}])
         self.ride_send(["Execute", {"trace": 0, "text": "'#'⎕NS⎕FIX⎕SE.Dyalog.IpyNS\n"}])
