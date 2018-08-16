@@ -30,7 +30,7 @@ _port = DYALOG_PORT
 #no of sec waiting for initial RIDE handshake. Slower systems should be greater no. of sec, to give dyalog a chance to start
 RIDE_INIT_CONNECT_TIME_OUT = 3  #seconds
 
-TRACE = False   # Can be set by %trace on/off.
+SUSPEND = False   # Can be set by %suspend on/off.
 
 dq = deque()
 
@@ -163,8 +163,7 @@ class DyalogKernel(Kernel):
 
         received = ['','']
 
-        while self.ride_receive():
-            pass
+        self.ride_receive_wait()
 
         if len(dq)>0:
             received = dq.pop()
@@ -174,8 +173,7 @@ class DyalogKernel(Kernel):
             self.dyalogTCP.sendall(handShake1)
             writeln("SEND " + handShake1[8:].decode("utf-8"))
             # handshake2
-            while self.ride_receive():
-                pass
+            self.ride_receive()
             if len(dq) > 0:
                 received = dq.pop()
             if received[0] == handShake2[8:].decode("utf-8"):
@@ -192,15 +190,10 @@ class DyalogKernel(Kernel):
                 d = ["GetWindowLayout", {}]
                 self.ride_send(d)
 
-                while self.ride_receive():
-                    pass
-                if len(dq) > 0:
-                    received = dq.pop()
-
                 d = ["SetPW", {"pw": self.RIDE_PW}]
                 self.ride_send(d)
-                while self.ride_receive():
-                    pass
+                self.ride_receive_wait()
+                dq.clear()
                 self.connected = True
 
 
@@ -281,70 +274,30 @@ class DyalogKernel(Kernel):
 
         Kernel.__init__(self, **kwargs)
 
-
-
-
         self.dyalog_ride_connect()
-
 
     # return False if no RIDE message has been received
     def ride_receive(self):
-
         data = b''
-
         rcv = False;
-
         while True:
-
             try:
-                received = self.dyalogTCP.recv(BUFFER_SIZE)
-            except socket.timeout:
-                received = b''
-                writeln('no data')
-
-
-            data = data + received
-            if len(received)==0:
-                break
-
-        #lets parse one or more received RIDE messages
-        c_pos=0
-
-        while True:
-            #no RIDE message can be less then 8 bytes in length
-            if len(data)>8:
-
-                if sys.version_info[0]<3:
-                    ch1 = data[c_pos + 4].decode("utf-8")
-                    ch2 = data[c_pos + 5].decode("utf-8")
-                    ch3 = data[c_pos + 6].decode("utf-8")
-                    ch4 = data[c_pos + 7].decode("utf-8")
-                    ride_id = ch1+ch2+ch3+ch4
-                else:
-                    ride_id = chr(data[c_pos+4]) + chr(data[c_pos+5]) + chr(data[c_pos+6]) + chr(data[c_pos+7])
-
-
-
-                if sys.version_info[0]<3:
-                    msg_size = ord(data[c_pos])*0x1000000+ord(data[c_pos+1])*0x10000+ord(data[c_pos+2])*0x100+ord(data[c_pos+3])
-                else:
-                    msg_size = data[c_pos]*0x1000000+data[c_pos+1]*0x10000+data[c_pos+2]*0x100+data[c_pos+3]
-
-                rideMessage = data[c_pos+8:c_pos+msg_size]
-                if ride_id=="RIDE":
+                head = self.dyalogTCP.recv(8)
+                a,b,c,d = head[:4]
+                msg_len = a*0x1000000 + b*0x10000 + c*0x100 + d - 8
+                if head[4:8] == b'RIDE':
+                    rideMessage = b''
+                    while msg_len:
+                        rideMessage += self.dyalogTCP.recv(msg_len)
+                        msg_len -= len(rideMessage)
                     try:
                         rideMessage = rideMessage.decode("utf-8")
                     except:
-                        writeln("JSON parser error")
+                        writeln("JSON parse error")
                         return False
-
-                    # json, fix all \r and \n. They should be escaped appropriately for JSON
                     rideMessage = rideMessage.replace('\n', '\\n')
                     rideMessage = rideMessage.replace('\r', '\\r')
-
-
                     rcv = True
-
                     try:
                         json_data = json.loads(rideMessage)
                     except:
@@ -352,24 +305,19 @@ class DyalogKernel(Kernel):
                         json_data = []
                         json_data.append(rideMessage)
                         json_data.append("String")
-
                     writeln("RECV " + rideMessage)
                     dq.appendleft(json_data)
-
-
                 else:
-                    writeln('ERROR: not a RIDE message!')
-
-                c_pos = c_pos + msg_size
-
-            else:
-               if len(data)>0:
-                    writeln('Not a RIDE message, too short')
-               data = b''
-
-            if c_pos>=len(data):
-               break
+                    writeln("Invalid Ride message")
+                    return False
+            except socket.timeout:
+                writeln('no data')
+                break
         return rcv
+
+    def ride_receive_wait(self):    # Like ride_receive but will keep trying until it gets data
+        while True:
+            if self.ride_receive(): break
 
     # d is python  list, json.
     def ride_send(self, d):
@@ -380,6 +328,7 @@ class DyalogKernel(Kernel):
         json_str.replace('\r', '\\r')
 
         _data = bytearray(str.encode(json_str))
+
 
         l = len(_data)
 
@@ -428,51 +377,59 @@ class DyalogKernel(Kernel):
 
     def do_execute(self, code, silent, store_history=True, user_expressions=None,
                    allow_stdin=True):
-        global TRACE
+        global SUSPEND
         code = code.strip()
 
         if not silent:
             if self.connected:
                 lines = code.split('\n')
-                if lines[0].lower() == '%define':
-                    self.define_lines(lines[1:])
-                    lines = ['⍬⊤⍬']
-                match = re.search('^%trace\s+(\w+)$', lines[0].lower(), re.IGNORECASE)
+                match = re.search('^%suspend\s+(\w+)$', lines[0].lower(), re.IGNORECASE)
                 if match:
-                    trace = match.group(1)
-                    if trace == 'on':
-                        TRACE = True
-                    elif trace == 'off':
-                        TRACE = False
-                        self.ride_send(["Execute", {"trace": 0,"text": "→\n"}])
+                    suspend = match.group(1)
+                    if suspend == 'on':
+                        SUSPEND = True
+                    elif suspend == 'off':
+                        SUSPEND = False
+                        self.ride_send(["GetSIStack", {}])
+                        self.ride_receive_wait()
+                        stack = dq.pop()[1].get('stack')
+                        if stack:
+                            self.execute_line("→\n"*len(stack))
+                            self.ride_receive_wait()
+                        dq.clear()
                     else:
-                        self.out_error('UNDEFINED ARGUMENT TO %trace, USE EITHER on OR off')
+                        self.out_error('JUPYTER NOTEBOOK: UNDEFINED ARGUMENT TO %suspend, USE EITHER on OR off')
                     lines = lines[1:]
+                elif re.match('^\\s*∇', lines[0]):
+                    if not re.match('\\s*∇$', lines[-1]):
+                        self.out_error('JUPYTER NOTEBOOK: INVALID FUNCTION DEFINITION')
+                    else:
+                        lines[0]  = re.sub('^\\s*∇','',lines[0])
+                        lines = lines[:-1]
+                        self.define_function(lines)
+                    lines=[]
+                elif lines[0].lower() == ']dinput':
+                    self.define_function(lines[1:])
+                    lines = []
                 try:
-                    # the windows interpreter can only handle ~125 chacaters at a time
+                    # the windows interpreter can only handle ~125 chacaters at a time, so we do one line at a time
                     for line in lines:
-                        if re.match('^\\s*∇', line):
-                            self.out_error('JUPYTER NOTEBOOK: Use %define instead of the ∇ editor')
-                            break
-                        line= line + '\n'
-                        d = ["Execute", {"trace": 0, "text": line}]
-                        self.ride_send(d)
+                        line = line + '\n'
+                        self.execute_line(line)
 
                         dq.clear()
                         PROMPT_AVAILABLE = False
                         err = False
                         data_collection =''
 
-                        while self.ride_receive():
-                            pass
-
                         # as long as we have queue dq or RIDE PROMPT is not available... do loop
                         while (len(dq)>0 or not PROMPT_AVAILABLE):
 
                             received = ['','']
-                            # in case prompt is not available e.g time consuming calculations, make sure dq is not empty.
-                            if len(dq) > 0:
-                                received = dq.pop()
+                            if len(dq)==0:
+                                self.ride_receive_wait()
+
+                            received = dq.pop()
 
                             if received[0]=='AppendSessionOutput':
                                 if not PROMPT_AVAILABLE:
@@ -491,7 +448,7 @@ class DyalogKernel(Kernel):
                                         data_collection = ''
                                     err = False
                                 elif pt == 2:
-                                    self.ride_send(["Execute", {"trace": 0, "text": "→\n"}])
+                                    self.execute_line("→\n")
                                     raise ValueError('JUPYTER NOTEBOOK: Input through ⎕ is not supported')
                                 elif pt == 4:
                                     time.sleep(1)
@@ -505,28 +462,21 @@ class DyalogKernel(Kernel):
                                 err = True
                             #actually we don't want echo
                             elif received[0]=='OpenWindow':
-                                if not TRACE:
-                                    self.ride_send(["Execute", {"trace": 0, "text": "→\n"}])
+                                if not SUSPEND:
+                                    self.execute_line("→\n")
                             elif received[0]=='EchoInput':
                                 pass
-                            if len(dq)==0:
-                                while self.ride_receive():
-                                    pass
                             #self.pa(received[1].get('input'))
                 except KeyboardInterrupt:
                     self.ride_send(["StrongInterrupt", {}])
-                    if not TRACE:
-                        self.ride_send(["Execute", {"trace": 0, "text": "→\n"}])
-                    time.sleep(0.1)
+                    if not SUSPEND:
+                        self.execute_line("→\n")
                     self.out_error('INTERRUPT')
-                    while self.ride_receive():
-                        pass
+                    self.ride_receive_wait()
                     dq.clear()
                 except ValueError as err:
-                    time.sleep(0.1)
                     self.out_error(str(err))
-                    while self.ride_receive():
-                        pass
+                    self.ride_receive_wait()
                     dq.clear()
 
             else:
@@ -541,15 +491,25 @@ class DyalogKernel(Kernel):
 
         return reply_content
 
+    def execute_line(self, line):
+        self.ride_send(["Execute", {"trace": 0, "text": line}])
 
-    def define_lines(self, lines):
-        self.ride_send(["Execute", {"trace": 0, "text": "⎕SE.Dyalog.IpyNS←⊂':namespace'\n"}])
+    def define_function(self, lines):
+        self.execute_line("⎕SE.Dyalog.x←''\n")
         for line in lines:
             quoted = "'"+line.replace("'","''")+"'"
-            self.ride_send(["Execute", {"trace": 0, "text": "⎕SE.Dyalog.IpyNS,←⊂,"+quoted+"\n"}])
-        self.ride_send(["Execute", {"trace": 0, "text": "⎕SE.Dyalog.IpyNS,←⊂':endnamespace'\n"}])
-        self.ride_send(["Execute", {"trace": 0, "text": "'#'⎕NS⎕FIX⎕SE.Dyalog.IpyNS\n"}])
-        self.ride_send(["Execute", {"trace": 0, "text": "⎕EX'⎕SE.Dyalog.IpyNS'\n"}])
+            self.execute_line("⎕SE.Dyalog.x,←⊂,"+quoted+"\n")
+            self.ride_receive_wait()
+        dq.clear()
+        self.execute_line("{''≢0⍴r←⎕FX ⍵:511 ⎕SIGNAL⍨'DEFN ERROR: issue on line ',⍕r}⎕SE.Dyalog.x\n")
+        self.execute_line("⎕EX'⎕SE.Dyalog.x'\n")
+        self.ride_receive_wait()
+        while len(dq)>0:
+            msg = dq.pop()
+            if msg==["HadError", {"error": 511,"dmx": 0}]:
+                msg = dq.pop()
+                if msg[0]=='AppendSessionOutput':
+                    self.out_error(msg[1].get('result'))
 
 
     def do_shutdown(self, restart):
