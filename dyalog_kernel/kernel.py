@@ -495,14 +495,14 @@ class DyalogKernel(Kernel):
         self.ride_send(["Execute", {"trace": 0, "text": line}])
 
     def define_function(self, lines):
-        self.execute_line("⎕SE.Dyalog.x←''\n")
+        self.execute_line("⎕SE.Dyalog.ipyFn←''\n")
         for line in lines:
             quoted = "'"+line.replace("'","''")+"'"
-            self.execute_line("⎕SE.Dyalog.x,←⊂,"+quoted+"\n")
+            self.execute_line("⎕SE.Dyalog.ipyFn,←⊂,"+quoted+"\n")
             self.ride_receive_wait()
         dq.clear()
-        self.execute_line("{''≢0⍴r←⎕FX ⍵:511 ⎕SIGNAL⍨'DEFN ERROR: issue on line ',⍕r}⎕SE.Dyalog.x\n")
-        self.execute_line("⎕EX'⎕SE.Dyalog.x'\n")
+        self.execute_line("{''≢0⍴r←⎕FX ⍵:511 ⎕SIGNAL⍨'DEFN ERROR: issue on line ',⍕r}⎕SE.Dyalog.ipyFn\n")
+        self.execute_line("⎕EX'⎕SE.Dyalog.ipyFn'\n")
         self.ride_receive_wait()
         while len(dq)>0:
             msg = dq.pop()
