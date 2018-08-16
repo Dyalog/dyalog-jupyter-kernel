@@ -402,7 +402,7 @@ class DyalogKernel(Kernel):
                     lines = lines[1:]
                 elif re.match('^\\s*∇', lines[0]):
                     if not re.match('\\s*∇$', lines[-1]):
-                        self.out_error('JUPYTER NOTEBOOK: INVALID FUNCTION DEFINITION')
+                        self.out_error('DEFN ERROR: Missing closing ∇')
                     else:
                         lines[0]  = re.sub('^\\s*∇','',lines[0])
                         lines = lines[:-1]
@@ -501,7 +501,7 @@ class DyalogKernel(Kernel):
             self.execute_line("⎕SE.Dyalog.ipyFn,←⊂,"+quoted+"\n")
             self.ride_receive_wait()
         dq.clear()
-        self.execute_line("{''≢0⍴r←⎕FX ⍵:511 ⎕SIGNAL⍨'DEFN ERROR: issue on line ',⍕r}⎕SE.Dyalog.ipyFn\n")
+        self.execute_line("{''≢0⍴r←⎕FX ⍵:511 ⎕SIGNAL⍨'DEFN ERROR: Issue on line ',⍕r}⎕SE.Dyalog.ipyFn\n")
         self.execute_line("⎕EX'⎕SE.Dyalog.ipyFn'\n")
         self.ride_receive_wait()
         while len(dq)>0:
