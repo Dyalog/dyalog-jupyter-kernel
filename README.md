@@ -16,9 +16,16 @@ Introduction and a collection of ready-made notebooks are available [here](https
    Windows: `install.bat`  
    Linux and macOS: `install.sh`
 
-### APL keyboard and language bar
+### Entering APL characters
 
-You can add an APL language bar which includes key-bindings and character compositions to your browser. It is available [here](https://abrudz.github.io/lb/apl) in the form of a bookmark. After installation, launch a Jupyter notebook and then click on the bookmark.
+You can get an APL language bar and enable key-bindings and character compositions using just a [a bookmarklet](https://abrudz.github.io/lb/apl) (a browser bookmark that contains commands which add new features to the browser). After adding the bookmarklet to your language bar, and opening a Jupyter notebook document in your browser, click on the bookmarklet. You can now insert APL characters in three ways:
+
+1. Click a symbol on the language bar.
+1. Type *Backtick* (`` ` ``) and then the associated symbol (hover over symbols on the language bar to see associations), e.g. *Backtick*+*r* makes `⍴` and *Backtick*+*Shift*+*e* makes `⍷`.
+1. Type two symbols which roughly make up the APL symbol, then press the *Tab* key to combine them. The two symbols are chosen to be easy to guess according to one of the following systems:
+    1. The symbols roughly make up the APL symbol when overlaid. For example, `O-` *Tab* makes `⊖` and `A|`*Tab*  makes `⍋`.
+    1. The symbols roughly make up the APL symbol when juxtaposed. For example, `<>` *Tab* makes `⋄` and `[]` *Tab* makes `⎕`
+    1. The symbols are identical, and are visually similar to the APL symbol. For example, `ee` makes `∊` and `xx` makes `×`.
 
 ## Running
 
