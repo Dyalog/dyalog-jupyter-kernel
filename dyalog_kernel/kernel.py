@@ -321,11 +321,11 @@ class DyalogKernel(Kernel):
 
     # d is python  list, json.
     def ride_send(self, d):
-        json_str = 'XXXXRIDE' + json.dumps(d)
+        json_str = 'XXXXRIDE' + json.dumps(d,separators=(',',':'))
 
         # json, fix all \r and \n. They should be escaped appropriately for JSON
-        json_str.replace('\n', '\\n')
-        json_str.replace('\r', '\\r')
+        json_str = json_str.replace('\n', '\\n')
+        json_str = json_str.replace('\r', '\\r')
 
         _data = bytearray(str.encode(json_str))
 
@@ -336,7 +336,7 @@ class DyalogKernel(Kernel):
         _data[1] = (l >> 16) & 0xff
         _data[2] = (l >> 8) & 0xff
         _data[3] = l & 0xff
-
+        
         self.dyalogTCP.sendall(_data)
         writeln("SEND " + _data[8:].decode("utf-8"))
 
@@ -466,6 +466,8 @@ class DyalogKernel(Kernel):
                                     self.execute_line("→\n")
                             elif received[0]=='EchoInput':
                                 pass
+                            elif received[0]=='OptionsDialog':
+                                self.ride_send(["ReplyOptionsDialog", {"index": -1, "token": received[1].get('token')}])
                             #self.pa(received[1].get('input'))
                 except KeyboardInterrupt:
                     self.ride_send(["StrongInterrupt", {}])
