@@ -149,6 +149,7 @@ class DyalogKernel(Kernel):
         while True:
             self.dyalogTCP = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             self.dyalogTCP.settimeout(TCP_TIMEOUT)
+            time.sleep(0.5)  # solves an issue with connecting to 17.0 on Linux
             try:
                 self.dyalogTCP.connect((DYALOG_HOST, self._port))
                 break
