@@ -1,5 +1,6 @@
-﻿:Namespace Render ⍝ V1.00
+﻿:Namespace Render ⍝ V1.01
 ⍝ 2018 08 16 Adam: Initial commit
+⍝ 2018 09 18 Adam: Fix error in -type=bar -??
 
     ⎕IO←1 ⋄ ⎕ML←1
 
@@ -46,7 +47,7 @@
               type←n⊃Chart.GetTypes
               (syntax description)←DescribeData type
               r←⊂']',cmd,syntax,' -type=',type
-              r,←,/': ' '. ' '.',¨⍨n⊃Chart.(CHARTS[;DESC])
+              r,←,/': ' '. ' '.',¨⍨n⊃1↓Chart.(CHARTS[;DESC])
               :If ×level
                   r,←description
               :Else
