@@ -5,6 +5,7 @@ import sys
 import time
 import subprocess
 import re
+import html
 
 from collections import deque
 
@@ -121,7 +122,7 @@ class DyalogKernel(Kernel):
         _content = {
             # 'output_type': 'display_data',
             # 'data': {'text/plain': s},
-            'data': {'text/html': html_start + s + html_end},
+            'data': {'text/html': html_start + html.escape(s, False) + html_end},
             'execution_count': self.execution_count,
             'metadata': ''
 
