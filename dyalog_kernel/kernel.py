@@ -342,41 +342,6 @@ class DyalogKernel(Kernel):
         self.dyalogTCP.sendall(_data)
         writeln("SEND " + _data[8:].decode("utf-8"))
 
-
-
-    # No need for autocomplete functionality <TAB>
-    #
-    #
-    '''
-    def do_complete(self, code, cursor_pos):
-
-
-
-
-        try:
-            resp = self.apl_keymap[code[cursor_pos-1]]
-            return {'matches': [resp],
-                    'cursor_start': cursor_pos - 1,
-                    'cursor_end': cursor_pos,
-                    'metadata': [],
-                    'status': 'ok'
-
-                    }
-        except:
-
-            return {'matches': '',
-                    'cursor_start': cursor_pos,
-                    'cursor_end': cursor_pos,
-                    'metadata': [],
-                    'status': 'ok'
-
-                    }
-
-
-
-    '''
-
-
     def do_execute(self, code, silent, store_history=True, user_expressions=None,
                    allow_stdin=True):
         global SUSPEND
