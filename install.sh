@@ -1,15 +1,16 @@
-#!/usr/bin/env sh
+#!/bin/sh
+set -e
 
 BASEDIR=$(dirname "$0")
 
-OS=$(uname | tr "[:upper:]" "[:lower:]")
-case $OS in
-       darwin) KERNELDIR=~/Library/Jupyter/kernels/ ;;
-       linux)  KERNELDIR=~/.local/share/jupyter/kernels/ ;;
+case $(uname) in
+	Darwin)	KERNELDIR=~/Library/Jupyter/kernels ;;
+	Linux)	KERNELDIR=~/.local/share/jupyter/kernels ;;
+	*)	exit 1
 esac
+mkdir -p "$KERNELDIR"
+cp -r "$BASEDIR"/dyalog-kernel "$KERNELDIR"/
 
-mkdir -p $KERNELDIR
-cp -r $BASEDIR/dyalog-kernel $KERNELDIR
-
-mkdir -p $(python3 -m site --user-site)/
-cp -r $BASEDIR/dyalog_kernel $(python3 -m site --user-site)/
+SITEDIR=$(python3 -m site --user-site)
+mkdir -p "$SITEDIR"
+cp -r "$BASEDIR"/dyalog_kernel "$SITEDIR"/
