@@ -277,20 +277,25 @@ class DyalogKernel(Kernel):
 
         self.dyalog_ride_connect()
 
+    def recv_all(self, msg_len):
+        msg = b''
+        while msg_len:
+            part = self.dyalogTCP.recv(msg_len)
+            msg += part
+            msg_len -= len(part)
+        return msg
+
     # return False if no RIDE message has been received
     def ride_receive(self):
         data = b''
         rcv = False;
         while True:
             try:
-                head = self.dyalogTCP.recv(8)
+                head = self.recv_all(8)
                 a,b,c,d = head[:4]
                 msg_len = a*0x1000000 + b*0x10000 + c*0x100 + d - 8
                 if head[4:8] == b'RIDE':
-                    rideMessage = b''
-                    while msg_len:
-                        rideMessage += self.dyalogTCP.recv(msg_len)
-                        msg_len -= len(rideMessage)
+                    rideMessage = self.recv_all(msg_len)
                     try:
                         rideMessage = rideMessage.decode("utf-8")
                     except:
