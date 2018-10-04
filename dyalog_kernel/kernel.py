@@ -5,6 +5,7 @@ import sys
 import time
 import subprocess
 import re
+import html
 
 from collections import deque
 
@@ -121,7 +122,7 @@ class DyalogKernel(Kernel):
         _content = {
             # 'output_type': 'display_data',
             # 'data': {'text/plain': s},
-            'data': {'text/html': html_start + s + html_end},
+            'data': {'text/html': html_start + html.escape(s, False) + html_end},
             'execution_count': self.execution_count,
             'metadata': ''
 
@@ -345,41 +346,6 @@ class DyalogKernel(Kernel):
         
         self.dyalogTCP.sendall(_data)
         writeln("SEND " + _data[8:].decode("utf-8"))
-
-
-
-    # No need for autocomplete functionality <TAB>
-    #
-    #
-    '''
-    def do_complete(self, code, cursor_pos):
-
-
-
-
-        try:
-            resp = self.apl_keymap[code[cursor_pos-1]]
-            return {'matches': [resp],
-                    'cursor_start': cursor_pos - 1,
-                    'cursor_end': cursor_pos,
-                    'metadata': [],
-                    'status': 'ok'
-
-                    }
-        except:
-
-            return {'matches': '',
-                    'cursor_start': cursor_pos,
-                    'cursor_end': cursor_pos,
-                    'metadata': [],
-                    'status': 'ok'
-
-                    }
-
-
-
-    '''
-
 
     def do_execute(self, code, silent, store_history=True, user_expressions=None,
                    allow_stdin=True):
