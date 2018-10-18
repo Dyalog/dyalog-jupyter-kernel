@@ -236,14 +236,14 @@ class DyalogKernel(Kernel):
         if DYALOG_HOST == '127.0.0.1':
             if sys.platform.lower().startswith('win'):
                 #Windows. Let's find an installed version to use
-                hklmReg = ConnectRegistry(None,HKEY_LOCAL_MACHINE)
-                dyalogKey = OpenKey(hklmReg, r"SOFTWARE\Dyalog")
+                hkcuReg = ConnectRegistry(None,HKEY_CURRENT_USER)
+                dyalogKey = OpenKey(hkcuReg, r"SOFTWARE\Dyalog")
                 installCount = QueryInfoKey(dyalogKey)[0]
                 for n in range(installCount):
                     currInstall = EnumKey(dyalogKey, installCount - (n + 1))
                     if currInstall[:12] == "Dyalog APL/W":
                         break
-                lastKey = OpenKey(hklmReg, r"SOFTWARE\\Dyalog\\" + currInstall)
+                lastKey = OpenKey(hkcuReg, r"SOFTWARE\\Dyalog\\" + currInstall)
                 dyalogPath = QueryValueEx(lastKey,"dyalog")[0] + "\\dyalog.exe"
                 CloseKey(dyalogKey)
                 CloseKey(lastKey)
