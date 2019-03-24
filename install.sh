@@ -15,4 +15,4 @@ SITEDIR=$(python3 -m site --user-site)
 CONDIR=/home/$USER/anaconda3/lib/python3.7/site-packages
 mkdir -p "$SITEDIR"
 cp -r "$BASEDIR"/dyalog_kernel "$SITEDIR"/
-cp -r "$BASEDIR"/dyalog_kernel "$CONDIR"/
+[ -d "$CONDIR" ] && cp -r "$BASEDIR"/dyalog_kernel "$CONDIR"/
