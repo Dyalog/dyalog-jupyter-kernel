@@ -11,10 +11,11 @@ esac
 mkdir -p "$KERNELDIR"
 cp -r "$BASEDIR"/dyalog-kernel "$KERNELDIR"/
 
-SITEDIR=$(python3 -m site --user-site)
-CONDIR=/home/$USER/anaconda3/lib/python3.7/site-packages
+SITEDIR="$(python3 -m site --user-site)"
 mkdir -p "$SITEDIR"
 cp -r "$BASEDIR"/dyalog_kernel "$SITEDIR"/
+
+CONDIR="$HOME/anaconda3/lib/python3.7/site-packages"
 if [ -d "$CONDIR" ] ; then
 	cp -r "$BASEDIR"/dyalog_kernel "$CONDIR"/
 fi
