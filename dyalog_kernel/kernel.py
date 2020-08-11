@@ -114,7 +114,7 @@ class DyalogKernel(Kernel):
             # 'data': {'text/plain': s},
             'data': {'text/html': html_start + html.escape(s, False) + html_end},
             'execution_count': self.execution_count,
-            'metadata': ''
+            'metadata': {},
 
             # 'transient': ''
         }
