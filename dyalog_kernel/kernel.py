@@ -33,7 +33,14 @@ RIDE_INIT_CONNECT_TIME_OUT = 3  # seconds
 
 SUSPEND = False   # Can be set by %suspend on/off.
 
+# debugging flag
+DYALOGJUPYTERKERNELDEBUG = os.environ.get("DYALOGJUPYTERKERNELDEBUG", False)
+
 dq = deque()
+
+def debug(s):
+    if DYALOGJUPYTERKERNELDEBUG:
+        writeln(s)
 
 
 def writeln(s):
@@ -141,7 +148,7 @@ class DyalogKernel(Kernel):
                 self.dyalogTCP.connect((DYALOG_HOST, self._port))
                 break
             except socket.error as msg:
-                # writeln(msg)
+                # debug(msg)
                 self.dyalogTCP.close()
                 if time.time() > timeout:
                     break
@@ -158,7 +165,7 @@ class DyalogKernel(Kernel):
         if received[0] == handShake1[8:].decode("utf-8"):
             # handshake1
             self.dyalogTCP.sendall(handShake1)
-            writeln("SEND " + handShake1[8:].decode("utf-8"))
+            debug("SEND " + handShake1[8:].decode("utf-8"))
             # handshake2
             self.ride_receive()
             if len(dq) > 0:
@@ -166,7 +173,7 @@ class DyalogKernel(Kernel):
             if received[0] == handShake2[8:].decode("utf-8"):
                 # handshake2
                 self.dyalogTCP.sendall(handShake2)
-                writeln("SEND " + handShake2[8:].decode("utf-8"))
+                debug("SEND " + handShake2[8:].decode("utf-8"))
 
                 d = ["Identify", {"identity": 1}]
                 self.ride_send(d)
@@ -188,7 +195,7 @@ class DyalogKernel(Kernel):
         # path to connection_file. In case we need it in the close future
         #from ipykernel import get_connection_file
         #s = get_connection_file()
-        # writeln("########## " + str(s))
+        # debug("########## " + str(s))
 
         self._port = DYALOG_PORT
         # lets find first available port, starting from default DYALOG_PORT (:4502)
@@ -278,7 +285,7 @@ class DyalogKernel(Kernel):
                     try:
                         rideMessage = rideMessage.decode("utf-8")
                     except:
-                        writeln("JSON parse error")
+                        debug("JSON parse error")
                         return False
                     rideMessage = rideMessage.replace('\n', '\\n')
                     rideMessage = rideMessage.replace('\r', '\\r')
@@ -290,13 +297,13 @@ class DyalogKernel(Kernel):
                         json_data = []
                         json_data.append(rideMessage)
                         json_data.append("String")
-                    writeln("RECV " + rideMessage)
+                    debug("RECV " + rideMessage)
                     dq.appendleft(json_data)
                 else:
-                    writeln("Invalid Ride message")
+                    debug("Invalid Ride message")
                     return False
             except socket.timeout:
-                writeln('no data')
+                debug('no data')
                 break
         return rcv
 
@@ -324,7 +331,7 @@ class DyalogKernel(Kernel):
         _data[3] = l & 0xff
 
         self.dyalogTCP.sendall(_data)
-        writeln("SEND " + _data[8:].decode("utf-8"))
+        debug("SEND " + _data[8:].decode("utf-8"))
 
     def do_execute(self, code, silent, store_history=True, user_expressions=None,
                    allow_stdin=True):
