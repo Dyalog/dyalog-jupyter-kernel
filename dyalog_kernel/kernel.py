@@ -113,7 +113,7 @@ class DyalogKernel(Kernel):
     def out_vl(self, s):
         _content = {
             'data': {
-                'application/vnd.vegalite.v4+json': eval(" ".join(s))
+                'application/vnd.vegalite.v4+json': json.loads(s.replace('\\n', ''))
             },
             'metadata':{},
             'transient':{}
@@ -240,7 +240,7 @@ class DyalogKernel(Kernel):
                     0] + "\\dyalog.exe"
                 CloseKey(dyalogKey)
                 CloseKey(lastKey)
-                self.dyalog_subprocess = subprocess.Popen([dyalogPath, "RIDE_SPAWNED=1", 'RIDE_INIT=SERVE::' + str(
+                self.dyalog_subprocess = subprocess.Popen([dyalogPath, "RIDE_SPAWNED=1","DYALOG_NETCORE=1", 'RIDE_INIT=SERVE::' + str(
                     self._port).strip(), 'LOG_FILE=nul', os.path.dirname(os.path.abspath(__file__)) + '/init.dws'])
             else:
                 # linux, darwin... etc
@@ -390,9 +390,8 @@ class DyalogKernel(Kernel):
                     else:
                         self.define_function(lines)
                         lines = []
-                elif vlmatch:
-                    self.out_vl(lines[1:])
-                    lines = []                
+                elif vlmatch:                
+                    lines=lines[1:]
                 try:
                     # the windows interpreter can only handle ~125 chacaters at a time, so we do one line at a time
                     for line in lines:
@@ -427,7 +426,10 @@ class DyalogKernel(Kernel):
                                         if err:
                                             self.out_error(data_collection)
                                         else:
-                                            self.out_result(data_collection)
+                                            if vlmatch:
+                                                self.out_vl(data_collection)
+                                            else:
+                                                self.out_result(data_collection)
                                         data_collection = ''
                                     err = False
                                 elif pt == 2:
