@@ -110,6 +110,16 @@ class DyalogKernel(Kernel):
         }
         self.send_response(self.iopub_socket, 'execute_result', _content)
 
+    def out_vl(self, s):
+        _content = {
+            'data': {
+                'application/vnd.vegalite.v4+json': eval(" ".join(s))
+            },
+            'metadata':{},
+            'transient':{}
+        }
+        self.send_response(self.iopub_socket, 'display_data', _content)
+
     def out_result(self, s):
         # injecting css: white-space:pre. Means no wrapping, RIDE SetPW will take care about line wrapping
 
@@ -343,6 +353,8 @@ class DyalogKernel(Kernel):
                 lines = code.split('\n')
                 match = re.search('^%suspend\s+(\w+)$',lines[0].lower(), re.IGNORECASE)
                 nsmatch = re.match('^\\s*:namespace|:class|:interface',lines[0].lower())
+                vlmatch = re.match('^\\s*:vega-lite',lines[0].lower())
+
                 if match:
                     suspend = match.group(1)
                     if suspend == 'on':
@@ -378,6 +390,9 @@ class DyalogKernel(Kernel):
                     else:
                         self.define_function(lines)
                         lines = []
+                elif vlmatch:
+                    self.out_vl(lines[1:])
+                    lines = []                
                 try:
                     # the windows interpreter can only handle ~125 chacaters at a time, so we do one line at a time
                     for line in lines:
