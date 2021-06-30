@@ -102,7 +102,7 @@ class DyalogKernel(Kernel):
 
     def out_html(self, s):
         _content = {
-            # 'output_type': 'display_data',
+            # 'output_type': 'dispslay_data',
             'data': {'text/html': s},
             'execution_count': self.execution_count,
             'metadata': ''
@@ -113,7 +113,7 @@ class DyalogKernel(Kernel):
     def out_vl(self, s):
         _content = {
             'data': {
-                'application/vnd.vegalite.v4+json': json.loads(s.replace('\\n', ''))
+                'application/vnd.vegalite.v4+json': json.loads(s.replace('\n', ''))
             },
             'metadata':{},
             'transient':{}
