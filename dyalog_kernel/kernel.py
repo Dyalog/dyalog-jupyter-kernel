@@ -111,9 +111,13 @@ class DyalogKernel(Kernel):
         self.send_response(self.iopub_socket, 'execute_result', _content)
 
     def out_vl(self, s):
+        s=s.replace('\n', '')
+        s=s.replace('\r', '')
+        s=s.replace('\\n', '')
+        s=s.replace('\\r', '')
         _content = {
             'data': {
-                'application/vnd.vegalite.v4+json': json.loads(s.replace('\n', ''))
+                'application/vnd.vegalite.v4+json': json.loads(s)
             },
             'metadata':{},
             'transient':{}
@@ -510,10 +514,9 @@ class DyalogKernel(Kernel):
         if DYALOG_HOST == '127.0.0.1':
             if self.connected:
                 self.ride_send(["Exit", {"code": 0}])
-         #   time.sleep(2)
-         #   if self.dyalog_subprocess:
-         #       self.dyalog_subprocess.kill()
-
+            time.sleep(2)
+            if self.dyalog_subprocess:
+                self.dyalog_subprocess.kill()
         self.dyalogTCP.close()
         self.connected = False
         return {'status': 'ok', 'restart': restart}
