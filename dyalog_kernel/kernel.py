@@ -40,7 +40,7 @@ dq = deque()
 
 def debug(s):
     if DYALOGJUPYTERKERNELDEBUG:
-        writeln(s)
+     writeln(s)
 
 
 def writeln(s):
@@ -111,10 +111,11 @@ class DyalogKernel(Kernel):
         self.send_response(self.iopub_socket, 'execute_result', _content)
 
     def out_vl(self, s):
-        s=s.replace('\n', '')
+        s=s.replace('\n      ', '')
         s=s.replace('\r', '')
-        s=s.replace('\\n', '')
-        s=s.replace('\\r', '')
+        s=s.replace('\n', '')
+        #s=s.replace('\\r', '')
+        debug(s)
         _content = {
             'data': {
                 'application/vnd.vegalite.v4+json': json.loads(s)
