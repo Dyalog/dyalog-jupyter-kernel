@@ -128,8 +128,8 @@
           ⍺ If(0∘≡)((⎕NEW ⎕SE.Parser'-type=').Parse⍕'-\w+=\w+'⎕S'&'⊢'''[^'']'''⎕R''⊢⍵).type
       }
       Show←{
-          9∊⎕NC'⍵':(⍕∇ Render)⍵
-          ⍺←⊃'3500⌶'_⍨'<title>(.*)</title>'⎕S'\1'
+          9∊⎕NC'⍵':(⍕∇ Render)⍵   
+          ⍺←⊃'3500⌶',∘⊂⍨'<title>(.*)</title>'⎕S'\1'
           ride:{}(⍺ RideRender⊢)⍵
           Format←Encode(⍺ Document 96∘Shrink)⍣(2∊⎕NC'⍺')
           (#.⎕NEW'HTMLRenderer'_,⊂'HTML'_ Format ⍵).Wait
