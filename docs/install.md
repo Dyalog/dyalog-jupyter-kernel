@@ -43,7 +43,7 @@ Jupyter Notebook uses a web interface. It has a drop-down button labeled *New▾
 > ```
 > python : The term 'python' is not recognized as the name of a cmdlet, function,  script file, or operable program.
 > ```
-> Run the installer again. Make sure to tick **Add Python to environment variables**
+> Run the installer again and click **Modify**. Make sure to tick **Add Python to environment variables**
 
 ### Cannot assign requsted address
 > If you get the message  
