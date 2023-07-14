@@ -2,7 +2,7 @@
 
 ## What is this and how do I use it?
 
-Please see [our wiki](https://github.com/Dyalog/dyalog-jupyter-kernel/wiki).
+Please see [the documentation](https://dyalog.github.io/dyalog-jupyter-kernel).
 
 ## Do you have any premade notebook documents?
 
