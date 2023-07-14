@@ -46,7 +46,7 @@ Jupyter Notebook uses a web interface. It has a drop-down button labeled *New▾
 > Run the installer again and click **Modify**. Make sure to tick **Add Python to environment variables**
 
 ### Pip is not found
-> If you are using at least Pyton 3.4, you can use `ensurepip`.  
+> If you are using at least Python 3.4, you can use `ensurepip`.  
 > `python -m ensurepip`
 
 ### Cannot assign requsted address
