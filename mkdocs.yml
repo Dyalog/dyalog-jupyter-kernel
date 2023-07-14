@@ -1,6 +1,4 @@
 site_name: Dyalog Jupyter kernel
-repo_url: https://github.com/dyalog/dyalog-jupyter-kernel
-repo_name: Dyalog/dyalog-jupyter-kernel
 copyright: Copyright &copy; <strong><a href="https://dyalog.com">Dyalog Ltd.</a></strong>
 theme:
   favicon: 'img/favicon-32.png'
