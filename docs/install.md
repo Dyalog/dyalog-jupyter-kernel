@@ -31,7 +31,7 @@ cd /path/to/my/notebooks
 Then start the Jupyter notebook system:
 
 ```
-jupyter notebook
+python -m notebook
 ```
 
 Jupyter Notebook uses a web interface. It has a drop-down button labeled *New▾* where you can choose to create a new Dyalog APL notebook. You can also navigate to and click on any existing notebook (a file with the `.ipynb` extension) to open it.
@@ -44,6 +44,10 @@ Jupyter Notebook uses a web interface. It has a drop-down button labeled *New▾
 > python : The term 'python' is not recognized as the name of a cmdlet, function,  script file, or operable program.
 > ```
 > Run the installer again and click **Modify**. Make sure to tick **Add Python to environment variables**
+
+### Pip is not found
+> If you are using at least Pyton 3.4, you can use `ensurepip`.  
+> `python -m ensurepip`
 
 ### Cannot assign requsted address
 > If you get the message  
