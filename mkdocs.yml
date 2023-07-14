@@ -1,0 +1,29 @@
+site_name: Dyalog Jupyter kernel
+repo_url: https://github.com/dyalog/dyalog-jupyter-kernel
+repo_name: Dyalog/dyalog-jupyter-kernel
+copyright: Copyright &copy; <strong><a href="https://dyalog.com">Dyalog Ltd.</a></strong>
+theme:
+  favicon: 'img/favicon-32.png'
+  logo: 'img/dyalog-white.svg'
+  features:
+    - navigation.sections
+    - navigation.instant
+  name: material
+
+extra_css:
+  - css/main.css
+
+plugins:
+  - search
+
+markdown_extensions:
+  - admonition
+  - abbr
+  - footnotes
+  - attr_list 
+  - pymdownx.emoji:
+      emoji_index: !!python/name:materialx.emoji.twemoji
+      emoji_generator: !!python/name:materialx.emoji.to_svg
+  - pymdownx.superfences
+  - toc:
+      title: On this page
