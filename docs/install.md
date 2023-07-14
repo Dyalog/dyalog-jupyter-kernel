@@ -11,7 +11,7 @@
 
 	`pip install jupyter`
 
-1. Download the Dyalog Jupyter kernel repository as a zip: Click [here](https://github.com/Dyalog/dyalog-jupyter-kernel/archive/master.zip) to do so.
+1. Click to [download the Dyalog Jupyter kernel repository as a zip](https://github.com/Dyalog/dyalog-jupyter-kernel/archive/master.zip).
 1. After downloading, extract the contents and open the *dyalog-jupyter-kernel-master* directory.
 1. Run the following (it will have little visual effect, if any):  
 
