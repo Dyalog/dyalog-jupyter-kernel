@@ -39,7 +39,7 @@ Jupyter Notebook uses a web interface. It has a drop-down button labeled *New▾
 ## Troubleshooting
 
 ### Python is not found
-> If you get the message
+> Python is not always available on the PATH on Microsoft Windows after installation. If you get the message
 > ```
 > python : The term 'python' is not recognized as the name of a cmdlet, function,  script file, or operable program.
 > ```
