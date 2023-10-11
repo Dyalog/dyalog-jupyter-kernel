@@ -11,7 +11,11 @@ then
 		Linux)	KERNELDIR=~/.local/share/jupyter/kernels ;;
 		*)	exit 1
 	esac
-	SITEDIR="$(python3 -m site --user-site)"
+	if [ -n "$VIRTUAL_ENV" ]; then
+            SITEDIR="$VIRTUAL_ENV/lib/python$PYVER/site-packages"
+    else
+            SITEDIR="$(python3 -m site --user-site)"
+    fi
 	CONDIR="$HOME/anaconda3/lib/python$PYVER/site-packages"
 else
 	KERNELDIR="$CONDA_PREFIX"/share/jupyter/kernels
