@@ -12,7 +12,6 @@ from collections import deque
 
 from ipykernel.kernelbase import Kernel
 from dyalog_kernel import __version__
-from notebook.services.config import ConfigManager
 
 if sys.platform.lower().startswith('win'):
     from winreg import *
@@ -253,12 +252,6 @@ class DyalogKernel(Kernel):
                                              )[-1] + '/' + 'mapl'
                 self.dyalog_subprocess = subprocess.Popen([dyalog, '+s', '-q', os.path.dirname(os.path.abspath(
                     __file__)) + '/init.dws'], stdin=subprocess.PIPE, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, env=dyalog_env)
-
-        # disable auto closing of brackets/quotation marks. Not very useful in APL
-        # Pass None instead of False to restore auto-closing feature
-        c = ConfigManager()
-        c.update('notebook', {'CodeCell': {
-                 'cm_config': {'autoCloseBrackets': False}}})
 
         Kernel.__init__(self, **kwargs)
 
