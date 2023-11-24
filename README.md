@@ -53,4 +53,4 @@ Build release assets with
 python setup.py sdist bdist_wheel
 ```
 
-Upload release assets using `twine`
+Upload release assets using `twine`.
