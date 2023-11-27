@@ -20,7 +20,7 @@ This kernel is installable via Python's package installer, [pip](https://pip.pyp
 In your terminal, run the follwing command:
 
 ```sh
-pip install dyalog_jupyter_kernel
+pip install dyalog-jupyter-kernel[==2.0.0]
 ```
 
 After successfully installing the kernel module itself, you need to register it with your Jupyter installation, using the following terminal command:
@@ -45,7 +45,7 @@ jupyter lab # or jupyter notebook
 ```
 and you should now see Dyalog APL amongst your kernels. Click on the Dyalog APL icon.
 
-## Build notes (internal interest only)
+## Build notes (kernel developer interest only)
 
 Build release assets with
 
@@ -53,4 +53,48 @@ Build release assets with
 python setup.py sdist bdist_wheel
 ```
 
-Upload release assets using `twine`.
+Built assets will end up in `dist/`, and you can instruct `pip` to install from file for testing:
+
+```sh
+pip install dist/dyalog-jupyter-kernel-x.y.z.tar.gz
+```
+
+Upload release assets using [twine](https://twine.readthedocs.io/en/stable/). Install `twine` with 
+
+```sh
+pip install twine
+```
+
+Pick up the API token, and set up your `$HOME/.pypirc` file like this:
+
+```
+[distutils]
+index-servers =
+  pypi
+  testpypi
+
+[pypi]
+username = __token__
+password = pypi-A...Z  # Replace with your actual PyPI API token
+
+[testpypi]
+repository = https://test.pypi.org/legacy/
+username = __token__
+password = pypi-A...Z  # Replace with your actual TestPyPI API token
+```
+
+Use the API key as password, including the `pypi-` prefix.
+
+Upload the release:
+
+```sh
+twine upload --repository [test]pypi dist/*
+```
+
+To install the module from the test index, use
+
+```sh
+pip install --index-url https://test.pypi.org/simple/ --extra-index-url https://pypi.org/simple dyalog-jupyter-kernel[==2.0.0]
+python -m 'dyalog_kernel' install
+```
+The `--extra-index-url` argument is there so that `pip` can pick up any dependencies from the main index.
