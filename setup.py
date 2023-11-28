@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="dyalog-jupyter-kernel",
-    version="2.0.0",
+    version="2.0.1",
     author="Stefan Kruger",
     author_email="stefan@dyalog.com",
     description="Jupyter kernel for Dyalog APL",
