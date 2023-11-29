@@ -6,8 +6,8 @@ If you're a Python developer, or if you're already using a "canned" Python distr
 
 The below instructions install Jupyter and the Dyalog kernel inside a Python "virtual environment". This means that you can keep your Jupyter work separate from any other Python work, current or future. This is usually a good idea when working with Python.
 
-1. Download and install the [Dyalog interpreter](https://www.dyalog.com/download-zone.htm)
-2. Download, and run the official [Python installer](https://www.python.org/downloads/).
+1. Download and install the [Dyalog interpreter](https://www.dyalog.com/download-zone.htm). 
+2. Download, and run the official [Python installer](https://www.python.org/downloads/). Ensure you select `Use admin privileges to install Python`, `Add python.exe to PATH`, and `Disable PATH limit`.
 3. Open a PowerShell terminal. Type the following steps into the terminal window.
 4. Create a virtual Python environment with a name of your choosing, for example
     ```
