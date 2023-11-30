@@ -1,40 +1,50 @@
 # Install and use locally
 
-## Installing the Dyalog Jupyter kernel
-**Dyalog version 15.0 or later** and **Python version 3.X**, and the **jupyter** Python package must be installed in order to use the Dyalog Jupyter kernel.
+**Dyalog version 15.0 or later** and **Python version 3.8+**, and the **jupyterlab** Python package must be installed in order to use the Dyalog Jupyter kernel.
 
-1. Go to [the python website](https://www.python.org/downloads/) to download and install Python on your system. Linux typically comes with Python already installed.
+Installing, operating and maintaining a Python installation can be a bit of a chore, especially if you're not a Python developer. If you're coming to this wanting only to use Jupyter for Dyalog APL, here are some step by step instructions for how to set up the whole tool chain from scratch. 
 
-	If you need to manage multiple python versions, we recommend [pyenv](https://github.com/pyenv/pyenv).
+If you're a Python developer, or if you're already using a "canned" Python distribution, like [conda](https://docs.conda.io/en/latest/), you probably know what you're doing and can skip this document.
 
-1. Install [Jupyter](https://jupyter.org/) from a command line or PowerShell terminal.
+The below instructions show how to install Jupyter and the Dyalog kernel inside a Python "virtual environment". This means that you can keep your Jupyter work separate from any other Python work, current or future. This is usually a good idea when working with Python.
 
-	`pip install jupyter`
+1. Download and install the [Dyalog interpreter](https://www.dyalog.com/download-zone.htm). 
+2. Download, and run the official [Python installer](https://www.python.org/downloads/). Ensure you select `Use admin privileges to install Python`, `Add python.exe to PATH`, and `Disable PATH limit`.
+3. Open a  terminal (e.g. PowerShell if you're on Windows). Type the following steps into the terminal window.
+4. Create a virtual Python environment with a name of your choosing, e.g.
+    ```
+    python -m venv jupy312
+    ```
+5. Activate the virtual environment -- this is important:
+    ```
+    jupy312\Scripts\activate # Windows
+	. jupy312/bin/activate   # linux, macOS. Note leading dot.
+    ```
+    Your terminal prompt should change to have a `(jupy312)` prefix.
+6. [Optional, but recommended] Upgrade `pip` to the latest version:
+    ```
+    python.exe -m pip installl --upgrade pip # Windows
+    python -m pip installl --upgrade pip     # linux, macOS
+    ```
+7. Install `jupyterlab`:
+    ```
+    pip install jupyterlab
+    ```
+8. Install the Dyalog kernel Python module:
+    ```
+    pip install dyalog-jupyter-kernel
+    ```
+9. Register the kernel with Jupyter:
+    ```
+    python -m 'dyalog_kernel' install
+    ```
+10. Start jupyterlab (or notebook):
+    ```
+	cd path/to/my/notebooks/
+    jupyter lab # or jupyter notebook
+    ```
 
-1. Download the Dyalog Jupyter kernel repository as a zip: Click [here](https://github.com/Dyalog/dyalog-jupyter-kernel/archive/master.zip) to do so.
-1. After downloading, extract the contents and open the *dyalog-jupyter-kernel-master* directory.
-1. Run the following (it will have little visual effect, if any):  
-
-	Windows: `install.bat`  
-
-	Linux and macOS: `install.sh`
-
-## Run Jupyter Notebook
-Use a command line or PowerShell terminal.
-
-Go to the directory which contains your notebooks:
-
-```
-cd /path/to/my/notebooks
-```
-
-Then start the Jupyter notebook system:
-
-```
-jupyter notebook
-```
-
-Jupyter Notebook uses a web interface. It has a drop-down button labeled *New▾* where you can choose to create a new Dyalog APL notebook. You can also navigate to and click on any existing notebook (a file with the `.ipynb` extension) to open it.
+Jupyter lab (and notebook) uses a web interface. It has a drop-down button labeled *New▾* where you can choose to create a new Dyalog APL notebook. You can also navigate to and click on any existing notebook (a file with the `.ipynb` extension) to open it.
 
 ## Troubleshooting
 
