@@ -8,3 +8,5 @@
  ⎕TRAP←1006,'C→' ⍝ then cut back
  ⎕EX'Init' ⍝ remove self
  {}⎕SE.SALT.Settings'cmddir ,',hereDir
+ ⍝ Check once per minute whether kernel is connected, exit interpreter if not
+ 'Event'('Timer' '⍎{~⍵:⎕OFF}3501⌶⍬')⎕WS⍨'⎕SE.Jupyter.Connected'⎕WC'Timer' 60E3
