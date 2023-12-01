@@ -8,7 +8,7 @@ git describe --tags `git rev-list --tags --max-count=1`
 
 For patch releases, add 1 to the last component of the current tag. 
 
-Update the `__version__` string in `dyalog_kernel/__main__.py` accordingly, and the `version` key in `setup.py`.
+Update the `__version__` string in `dyalog_kernel/__init__.py` accordingly, and the `version` key in `setup.py`.
 
 The patch level should reset if we're changing major or minor version components, following semver.
 
@@ -27,8 +27,8 @@ pip install dist/dyalog-jupyter-kernel-x.y.z.tar.gz
 Now tag the master branch with the new version (prefixed by `v.`):
 
 ```
-git tag -a v2.0.1 -m "Release version 2.0.1"
-git push origin v2.0.1
+git tag -a v2.0.2 -m "Release version 2.0.2"
+git push origin v2.0.2
 ```
 
 Upload release assets using [twine](https://twine.readthedocs.io/en/stable/). Install `twine` with 
