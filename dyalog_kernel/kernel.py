@@ -354,6 +354,17 @@ class DyalogKernel(Kernel):
                         self.out_error(
                             'JUPYTER NOTEBOOK: UNDEFINED ARGUMENT TO %suspend, USE EITHER on OR off')
                     lines = lines[1:]
+                elif re.match('^\\s*∇', lines[0]):
+                    if not re.match('\\s*∇$', lines[-1]):
+                        self.out_error('DEFN ERROR: Missing closing ∇')
+                    else:
+                        if len(lines)==1:
+                            self.out_error('DEFN ERROR')
+                        else:
+                            lines[0] = re.sub('^\\s*∇', '', lines[0])
+                            lines = lines[:-1]
+                            self.define_function(lines)
+                    lines = []
                 elif lines[0].lower() == ']dinput':
                     lines = lines[1:]                
                 try:
