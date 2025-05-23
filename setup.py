@@ -22,6 +22,7 @@ setup(
     python_requires=">=3.8",
     install_requires=[
         "ipykernel>=6.20.0",
+        "metakernel>=0.30.3"
     ],
     entry_points={
         'console_scripts': [
