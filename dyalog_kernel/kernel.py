@@ -9,8 +9,8 @@ import html
 
 from collections import deque
 
-
-from ipykernel.kernelbase import Kernel
+from metakernel import MetaKernel
+from IPython.display import HTML, Image
 from dyalog_kernel import __version__
 
 if sys.platform.lower().startswith('win'):
@@ -49,7 +49,7 @@ def writeln(s):
     sys.stdout = tmp_stdout
 
 
-class DyalogKernel(Kernel):
+class DyalogKernel(MetaKernel):
 
     implementation = 'Dyalog'
     implementation_version = __version__
@@ -72,60 +72,19 @@ class DyalogKernel(Kernel):
     dyalog_subprocess = None
 
     def out_error(self, s):
-        _content = {
-            'output_type': 'stream',
-            'name': 'stderr',  # stdin or stderr
-            'text': s
-        }
-        self.send_response(self.iopub_socket, 'stream', _content)
+        self.Error(s)
 
     def out_png(self, s):
-        _content = {
-            'output_type': 'display_data',
-            'data': {
-                #'text/plain' : ['multiline text data'],
-                'image/png': s,
-                #'application/json':{
-                # JSON data is included as-is
-                #  'json':'data',
-                #},
-            },
-            'metadata': {
-                'image/svg': {
-                    'width': 120,
-                    'height': 80,
-                },
-            },
-        }
-        self.send_response(self.iopub_socket, 'display_data', _content)
+        #width and height values are fixed to maintain consistency with original implementation
+        self.Display(Image(data=s, width=120, height=80))
 
     def out_html(self, s):
-        _content = {
-            # 'output_type': 'display_data',
-            'data': {'text/html': s},
-            'execution_count': self.execution_count,
-            'metadata': ''
-            # 'transient': ''
-        }
-        self.send_response(self.iopub_socket, 'execute_result', _content)
+        self.Display(HTML(s))
 
     def out_result(self, s):
-        # injecting css: white-space:pre. Means no wrapping, RIDE SetPW will take care about line wrapping
-
         html_start = '<pre class="language-APL">'
         html_end = '</pre>'
-
-        _content = {
-            # 'output_type': 'display_data',
-            # 'data': {'text/plain': s},
-            'data': {'text/html': html_start + html.escape(s, False) + html_end},
-            'execution_count': self.execution_count,
-            'metadata': {},
-
-            # 'transient': ''
-        }
-
-        self.send_response(self.iopub_socket, 'execute_result', _content)
+        self.Display(HTML(html_start + html.escape(s, False) + html_end))
 
     def out_stream(self, s):
         _content = {
@@ -195,7 +154,7 @@ class DyalogKernel(Kernel):
         #from ipykernel import get_connection_file
         #s = get_connection_file()
         # debug("########## " + str(s))
-
+        super(DyalogKernel, self).__init__(**kwargs)
         self._port = DYALOG_PORT
         # lets find first available port, starting from default DYALOG_PORT (:4502)
         # this makes sense only if Dyalog APL and Jupyter executables are on the same host (localhost)
@@ -253,8 +212,6 @@ class DyalogKernel(Kernel):
                                              )[-1] + '/' + 'mapl'
                 self.dyalog_subprocess = subprocess.Popen([dyalog, '+s', '-q', os.path.dirname(os.path.abspath(
                     __file__)) + '/init.dws'], stdin=subprocess.PIPE, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, env=dyalog_env)
-
-        Kernel.__init__(self, **kwargs)
 
         self.dyalog_ride_connect()
 
@@ -327,8 +284,9 @@ class DyalogKernel(Kernel):
 
         self.dyalogTCP.sendall(_data)
         debug("SEND " + _data[8:].decode("utf-8"))
-
-    def do_execute(self, code, silent, store_history=True, user_expressions=None,
+    
+    #renamed to _do_execute to avoid overriding the do_execute method in MetaKernel
+    def _do_execute(self, code, silent=False, store_history=True, user_expressions=None,
                    allow_stdin=True):
         global SUSPEND
         code = code.strip()
@@ -355,9 +313,8 @@ class DyalogKernel(Kernel):
                             'JUPYTER NOTEBOOK: UNDEFINED ARGUMENT TO %suspend, USE EITHER on OR off')
                     lines = lines[1:]
                 elif lines[0].lower() == ']dinput':
-                    lines = lines[1:]                
+                    lines = lines[1:]
                 try:
-                    # the windows interpreter can only handle ~125 chacaters at a time, so we do one line at a time
                     pt = None
                     for line in lines:
                         line = line + '\n'
@@ -452,6 +409,10 @@ class DyalogKernel(Kernel):
                          }
 
         return reply_content
+    
+    def do_execute_direct(self, code, silent=False):
+        #defers non-magic code execution to the do_execute function defined by Dyalog
+        return self._do_execute(code, silent)
 
     def execute_line(self, line):
         self.ride_send(["Execute", {"trace": 0, "text": line}])
@@ -463,7 +424,7 @@ class DyalogKernel(Kernel):
             self.execute_line("⎕SE.Dyalog.ipyFn,←⊂," + quoted + "\n")
             self.ride_receive_wait()
         dq.clear()
-        if re.match('^\\s*:namespace|:class|:interface',lines[0].lower()):            
+        if re.match('^\\s*:namespace|:class|:interface',lines[0].lower()):
             self.execute_line("{0::'DEFN ERROR'⋄⎕FIX ⍵}⎕SE.Dyalog.ipyFn\n")
         else:
             self.execute_line("{''≢0⍴r←⎕FX ⍵:511 ⎕SIGNAL⍨'DEFN ERROR: Issue on line ',⍕r}⎕SE.Dyalog.ipyFn\n")
