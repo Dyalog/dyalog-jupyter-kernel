@@ -82,6 +82,7 @@ class DyalogKernel(MetaKernel):
         self.Display(HTML(s))
 
     def out_result(self, s):
+        # injecting css: white-space:pre. Means no wrapping, RIDE SetPW will take care about line wrapping
         html_start = '<pre class="language-APL">'
         html_end = '</pre>'
         self.Display(HTML(html_start + html.escape(s, False) + html_end))
@@ -315,6 +316,7 @@ class DyalogKernel(MetaKernel):
                 elif lines[0].lower() == ']dinput':
                     lines = lines[1:]
                 try:
+                    # the windows interpreter can only handle ~125 chacaters at a time, so we do one line at a time
                     pt = None
                     for line in lines:
                         line = line + '\n'
