@@ -371,8 +371,11 @@ class DyalogKernel(Kernel):
                     # the windows interpreter can only handle ~125 chacaters at a time, so we do one line at a time
                     pt = None
                     for line in lines:
-                        line = line + '\n'
-                        self.execute_line(line)
+                        if line == "":
+                          continue
+                        else:
+                            line = line + '\n'
+                            self.execute_line(line)
 
                         dq.clear()
                         PROMPT_AVAILABLE = False
