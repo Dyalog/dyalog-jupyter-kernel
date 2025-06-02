@@ -203,14 +203,14 @@ class DyalogKernel(Kernel):
 
             while True:
                 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-                result = sock.connect_ex(
-                    (str(DYALOG_HOST).strip(), self._port))
-                sock.close()
-                #port is available
-                if result != 0:
+                try:
+                    sock.bind((str(DYALOG_HOST).strip(), self._port))
+                    # port is available since I can bound
+                    sock.close()
                     break
-                else:
-                    # try next port
+                except OSError:
+                    # port is in use, try next one
+                    sock.close()
                     self._port += 1
 
         # if Dyalog APL and Jupyter executables are on the same host (localhost) let's start instance of Dyalog
