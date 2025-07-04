@@ -24,8 +24,8 @@ DYALOG_HOST = '127.0.0.1'
 DYALOG_PORT = 4502
 TCP_TIMEOUT = 0.1
 
-#_increment for port. To find first available
 _port = DYALOG_PORT
+
 
 # no of sec waiting for initial RIDE handshake. Slower systems should be greater no. of sec, to give dyalog a chance to start
 RIDE_INIT_CONNECT_TIME_OUT = 3  # seconds
@@ -195,24 +195,22 @@ class DyalogKernel(Kernel):
         #from ipykernel import get_connection_file
         #s = get_connection_file()
         # debug("########## " + str(s))
-
+        
         self._port = DYALOG_PORT
-        # lets find first available port, starting from default DYALOG_PORT (:4502)
+        # lets find an available port
         # this makes sense only if Dyalog APL and Jupyter executables are on the same host (localhost)
         if DYALOG_HOST == '127.0.0.1':
-
+            sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             while True:
-                sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-                result = sock.connect_ex(
-                    (str(DYALOG_HOST).strip(), self._port))
-                sock.close()
-                #port is available
-                if result != 0:
+                try:
+                    # Trying to bind a random port (0)
+                    sock.bind((str(DYALOG_HOST).strip(), 0))  # Port is available since I can bind
+                    # Get the port number
+                    self._port = sock.getsockname()[1]
                     break
-                else:
-                    # try next port
-                    self._port += 1
-
+                except OSError:
+                    continue
+            sock.close()
         # if Dyalog APL and Jupyter executables are on the same host (localhost) let's start instance of Dyalog
         if DYALOG_HOST == '127.0.0.1':
             if sys.platform.lower().startswith('win'):
