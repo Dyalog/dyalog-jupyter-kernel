@@ -1,1 +1,1 @@
-recursive-include dyalog_kernel/kernelspec *
+include dyalog_kernel/init.aplf

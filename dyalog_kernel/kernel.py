@@ -228,7 +228,7 @@ class DyalogKernel(Kernel):
                 CloseKey(dyalogKey)
                 CloseKey(lastKey)
                 self.dyalog_subprocess = subprocess.Popen([dyalogPath, "RIDE_SPAWNED=1", "DYALOGQUIETUCMDBUILD=1", "Dyalog_LineEditor_Mode=1", 'RIDE_INIT=SERVE::' + str(
-                    self._port).strip(), 'LOG_FILE=nul', os.path.dirname(os.path.abspath(__file__)) + '/init.dws'])
+                    self._port).strip(), 'LOG_FILE=nul', "DYALOGJUPYFOLDER=" + os.path.dirname(os.path.abspath(__file__)), "LOAD="+os.path.dirname(os.path.abspath(__file__))+"\init.aplf"])
             else:
                 # linux, darwin... etc
                 dyalog_env = os.environ.copy()
@@ -238,6 +238,7 @@ class DyalogKernel(Kernel):
                 dyalog_env['ENABLE_CEF'] = '0'
                 dyalog_env['LOG_FILE'] = '/dev/null'
                 dyalog_env['DYALOG_LINEEDITOR_MODE'] = '1'
+                dyalog_env['DYALOGJUPYFOLDER'] = os.path.dirname(os.path.abspath(__file__))
                 if sys.platform.lower() == "darwin":
                     for d in sorted(os.listdir('/Applications')):
                         if re.match('^Dyalog-\d+\.\d+\.app$', d):
@@ -249,8 +250,7 @@ class DyalogKernel(Kernel):
                             dyalog += sorted(os.listdir(dyalog))[-1] + '/'
                             dyalog += sorted(os.listdir(dyalog)
                                              )[-1] + '/' + 'mapl'
-                self.dyalog_subprocess = subprocess.Popen([dyalog, '+s', '-q', os.path.dirname(os.path.abspath(
-                    __file__)) + '/init.dws'], stdin=subprocess.PIPE, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, env=dyalog_env)
+                self.dyalog_subprocess = subprocess.Popen([dyalog, '+s', '-q', 'LOAD='+os.path.dirname(os.path.abspath(__file__))+'/init.aplf'], stdin=subprocess.PIPE, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, env=dyalog_env)
 
         Kernel.__init__(self, **kwargs)
 

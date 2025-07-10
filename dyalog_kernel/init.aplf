@@ -1,0 +1,6 @@
+init;jupyfolder
+jupyfolder ← 2⎕NQ#'GetEnvironment' 'DYALOGJUPYFOLDER'
+{}⎕SE.SALT.Settings'cmddir ,',jupyfolder
+'⎕SE.Jupyter'⎕NS⍬
+'Event'('Timer' '⍎{~⍵:⎕OFF}3501⌶⍬')⎕WS⍨'⎕SE.Jupyter.Connected'⎕WC'Timer' 60E3
+⎕EX ⍬⍴⎕SI
