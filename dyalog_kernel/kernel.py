@@ -228,7 +228,7 @@ class DyalogKernel(Kernel):
                 CloseKey(dyalogKey)
                 CloseKey(lastKey)
                 self.dyalog_subprocess = subprocess.Popen([dyalogPath, "RIDE_SPAWNED=1", "DYALOGQUIETUCMDBUILD=1", "Dyalog_LineEditor_Mode=1", 'RIDE_INIT=SERVE::' + str(
-                    self._port).strip(), 'LOG_FILE=nul', "DYALOGJUPYFOLDER=" + os.path.dirname(os.path.abspath(__file__)), "LOAD="+os.path.dirname(os.path.abspath(__file__))+"\init.aplf"])
+                    self._port).strip(), 'LOG_FILE=nul', "DYALOGJUPYFOLDER=" + os.path.dirname(os.path.abspath(__file__)), "LOAD="+os.path.dirname(os.path.abspath(__file__))+"\\init.aplf"])
             else:
                 # linux, darwin... etc
                 dyalog_env = os.environ.copy()
@@ -241,11 +241,11 @@ class DyalogKernel(Kernel):
                 dyalog_env['DYALOGJUPYFOLDER'] = os.path.dirname(os.path.abspath(__file__))
                 if sys.platform.lower() == "darwin":
                     for d in sorted(os.listdir('/Applications')):
-                        if re.match('^Dyalog-\d+\.\d+\.app$', d):
+                        if re.match(r'^Dyalog-\d+\.\d+\.app$', d):
                             dyalog = '/Applications/' + d + '/Contents/Resources/Dyalog/mapl'
                 else:
                     for v in sorted(os.listdir('/opt/mdyalog')):
-                        if re.match('^\d+\.\d+$', v):
+                        if re.match(r'^\d+\.\d+$', v):
                             dyalog = '/opt/mdyalog/' + v + '/'
                             dyalog += sorted(os.listdir(dyalog))[-1] + '/'
                             dyalog += sorted(os.listdir(dyalog)
@@ -334,7 +334,7 @@ class DyalogKernel(Kernel):
         if not silent:
             if self.connected:
                 lines = code.split('\n')
-                match = re.search('^%suspend\s+(\w+)$',lines[0].lower(), re.IGNORECASE)
+                match = re.search(r'^%suspend\s+(\w+)$',lines[0].lower(), re.IGNORECASE)
                 if match:
                     suspend = match.group(1)
                     if suspend == 'on':
