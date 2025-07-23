@@ -240,7 +240,9 @@ class DyalogKernel(Kernel):
                 dyalog_env['LOG_FILE'] = '/dev/null'
                 dyalog_env['DYALOG_LINEEDITOR_MODE'] = '1'
                 dyalog_env['DYALOGJUPYFOLDER'] = os.path.dirname(os.path.abspath(__file__))
-                if sys.platform.lower() == "darwin":
+                if shutil.which('dyalog'):
+                    dyalog = shutil.which('dyalog')
+                elif sys.platform.lower() == "darwin":
                     for d in sorted(os.listdir('/Applications')):
                         if re.match('^Dyalog-\d+\.\d+\.app$', d):
                             dyalog = '/Applications/' + d + '/Contents/Resources/Dyalog/mapl'
@@ -252,9 +254,7 @@ class DyalogKernel(Kernel):
                             dyalog += sorted(os.listdir(dyalog)
                                              )[-1] + '/' + 'mapl'
                 else:
-                    dyalog = shutil.which('dyalog')
-                    if dyalog == None:
-                        raise FileNotFoundError('Dyalog was not found')
+                    raise FileNotFoundError('Dyalog was not found')
 
                 self.dyalog_subprocess = subprocess.Popen([dyalog, '+s', '-q', 'LOAD='+os.path.dirname(os.path.abspath(__file__))+'/init.aplf'], stdin=subprocess.PIPE, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, env=dyalog_env)
 
