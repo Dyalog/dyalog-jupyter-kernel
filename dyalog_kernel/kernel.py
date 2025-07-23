@@ -1,5 +1,6 @@
 import json
 import os
+import shutil
 import socket
 import sys
 import time
@@ -243,13 +244,18 @@ class DyalogKernel(Kernel):
                     for d in sorted(os.listdir('/Applications')):
                         if re.match('^Dyalog-\d+\.\d+\.app$', d):
                             dyalog = '/Applications/' + d + '/Contents/Resources/Dyalog/mapl'
-                else:
+                elif os.path.exists('/opt/mdyalog'):
                     for v in sorted(os.listdir('/opt/mdyalog')):
                         if re.match('^\d+\.\d+$', v):
                             dyalog = '/opt/mdyalog/' + v + '/'
                             dyalog += sorted(os.listdir(dyalog))[-1] + '/'
                             dyalog += sorted(os.listdir(dyalog)
                                              )[-1] + '/' + 'mapl'
+                else:
+                    dyalog = shutil.which('dyalog')
+                    if dyalog == None:
+                        raise FileNotFoundError('Dyalog was not found')
+
                 self.dyalog_subprocess = subprocess.Popen([dyalog, '+s', '-q', 'LOAD='+os.path.dirname(os.path.abspath(__file__))+'/init.aplf'], stdin=subprocess.PIPE, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, env=dyalog_env)
 
         Kernel.__init__(self, **kwargs)
