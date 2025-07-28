@@ -242,6 +242,8 @@ class DyalogKernel(Kernel):
                 dyalog_env['DYALOGJUPYFOLDER'] = os.path.dirname(os.path.abspath(__file__))
                 if shutil.which('mapl'):
                     dyalog = shutil.which('mapl')
+                elif shutil.which('dyalog'):
+                    dyalog = shutil.which('dyalog')
                 elif sys.platform.lower() == "darwin":
                     for d in sorted(os.listdir('/Applications')):
                         if re.match('^Dyalog-\d+\.\d+\.app$', d):
