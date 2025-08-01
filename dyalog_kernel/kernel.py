@@ -262,7 +262,7 @@ class DyalogKernel(Kernel):
                 CloseKey(dyalogKey)
                 CloseKey(lastKey)
                 self.dyalog_subprocess = subprocess.Popen([dyalogPath, "RIDE_SPAWNED=1", "DYALOGQUIETUCMDBUILD=1", "Dyalog_LineEditor_Mode=1", 'RIDE_INIT=SERVE::' + str(
-                    self._port).strip(), 'LOG_FILE=nul', "DYALOGJUPYFOLDER=" + os.path.dirname(os.path.abspath(__file__)), "LOAD="+os.path.dirname(os.path.abspath(__file__))+"\\init.aplf"])
+                    self._port).strip(), 'LOG_FILE_INUSE=0', "DYALOGJUPYFOLDER=" + os.path.dirname(os.path.abspath(__file__)), "LOAD="+os.path.dirname(os.path.abspath(__file__))+"\\init.aplf"])
             else:
                 # linux, darwin... etc
                 dyalog_env = os.environ.copy()
@@ -270,7 +270,7 @@ class DyalogKernel(Kernel):
                 dyalog_env['RIDE_SPAWNED'] = '1'
                 dyalog_env['DYALOGQUIETUCMDBUILD'] = '1'
                 dyalog_env['ENABLE_CEF'] = '0'
-                dyalog_env['LOG_FILE'] = '/dev/null'
+                dyalog_env['LOG_FILE_INUSE'] = '0'
                 dyalog_env['DYALOG_LINEEDITOR_MODE'] = '1'
                 dyalog_env['DYALOGJUPYFOLDER'] = os.path.dirname(os.path.abspath(__file__))
                 if shutil.which('mapl'):
