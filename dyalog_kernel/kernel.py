@@ -7,6 +7,7 @@ import time
 import subprocess
 import re
 import html
+import signal
 
 from collections import deque
 
@@ -136,6 +137,34 @@ class DyalogKernel(Kernel):
         }
         self.send_response(self.iopub_socket, 'stream', _content)
 
+    def cleanup_dyalog(self):
+        try:
+            if DYALOG_HOST == '127.0.0.1':
+                if self.connected and hasattr(self, 'dyalogTCP'):
+                    self.ride_send(["Exit", {"code": 0}])
+                if self.dyalog_subprocess:
+                    # Graceful termination
+                    self.dyalog_subprocess.terminate()
+                    try:
+                        self.dyalog_subprocess.wait(timeout=3)
+                    except subprocess.TimeoutExpired:
+                        # Force kill if graceful termination fails
+                        self.dyalog_subprocess.kill()
+                        self.dyalog_subprocess.wait()
+
+            if hasattr(self, 'dyalogTCP'):
+                    self.dyalogTCP.close()
+
+            self.connected = False
+
+        except Exception as e:
+            debug(f"Error in cleanup_dyalog: {e}")
+
+    def signal_handler(self, signum, frame):
+        debug(f"Received signal {signum}, cleaning up...")
+        self.cleanup_dyalog()
+        sys.exit(0)
+
     def dyalog_ride_connect(self):
 
         timeout = time.time() + RIDE_INIT_CONNECT_TIME_OUT
@@ -196,7 +225,11 @@ class DyalogKernel(Kernel):
         #from ipykernel import get_connection_file
         #s = get_connection_file()
         # debug("########## " + str(s))
-        
+                    
+        # Register signal handlers and cleanup
+        signal.signal(signal.SIGTERM, self.signal_handler)
+        signal.signal(signal.SIGINT, self.signal_handler)
+   
         self._port = DYALOG_PORT
         # lets find an available port
         # this makes sense only if Dyalog APL and Jupyter executables are on the same host (localhost)
@@ -498,14 +531,5 @@ class DyalogKernel(Kernel):
 
     def do_shutdown(self, restart):
         # shutdown Dyalog executable only if Jupyter kernel has started it.
-
-        if DYALOG_HOST == '127.0.0.1':
-            if self.connected:
-                self.ride_send(["Exit", {"code": 0}])
-         #   time.sleep(2)
-         #   if self.dyalog_subprocess:
-         #       self.dyalog_subprocess.kill()
-
-        self.dyalogTCP.close()
-        self.connected = False
+        self.cleanup_dyalog()
         return {'status': 'ok', 'restart': restart}
